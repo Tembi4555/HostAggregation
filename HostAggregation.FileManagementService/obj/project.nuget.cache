@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "lMIq4eNzpNrGwJ7P2FbsaNeXrNc+Q3kDBvr+ln2QEDXlhHZwYnsrmh2Th+ZGpPHlfiHPLEqW/cM9gpzteEaKug==",
+  "success": true,
+  "projectFilePath": "D:\\projects\\HostAggregation\\HostAggregation.FileManagementService\\HostAggregation.FileManagementService.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\AVGrushev\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.25\\microsoft.windowsdesktop.app.ref.6.0.25.nupkg.sha512",
+    "C:\\Users\\AVGrushev\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.25\\microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
+    "C:\\Users\\AVGrushev\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.25\\microsoft.aspnetcore.app.ref.6.0.25.nupkg.sha512"
+  ],
+  "logs": []
+}
