@@ -260,9 +260,25 @@ namespace HostAggregation.FileManagementService
             {
                 return ex.Message;
             }
+        }
+        public static async Task<string> SaveFileAsync(string path, string textForSave)
+        {
+            try
+            {
+                using (FileStream fstream = new FileStream(path, FileMode.OpenOrCreate))
+                {
+                    // преобразуем строку в байты
+                    byte[] buffer = Encoding.Default.GetBytes(textForSave);
+                    // запись массива байтов в файл
+                    await fstream.WriteAsync(buffer, 0, buffer.Length);
+                    return $"Файл сохранен в {path}";
+                }
 
-            
-
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
     }
 }
