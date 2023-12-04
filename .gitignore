@@ -40,7 +40,6 @@
 /HostAggregation/obj/HostAggregation.csproj.nuget.g.targets
 /HostAggregation/obj/project.assets.json
 /HostAggregation/obj/project.nuget.cache
-/HostAggregation/Program.cs
 /HostAggregation.FileManagementService/bin/Debug/net6.0/HostAggregation.FileManagementService.deps.json
 /HostAggregation.FileManagementService/bin/Debug/net6.0/HostAggregation.FileManagementService.pdb
 /HostAggregation.FileManagementService/obj/Debug/net6.0/HostAggregation.FileManagementService.AssemblyInfo.cs
@@ -94,3 +93,4 @@
 /RangeAllocationService/obj/HostAggregation.RangeAllocationService.csproj.nuget.g.props
 /RangeAllocationService/obj/project.assets.json
 /RangeAllocationService/obj/project.nuget.cache
+*.vsidx
