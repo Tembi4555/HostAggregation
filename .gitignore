@@ -94,3 +94,17 @@
 /RangeAllocationService/obj/project.assets.json
 /RangeAllocationService/obj/project.nuget.cache
 *.vsidx
+*.bin
+/HostAggregation/obj/Debug/net6.0/HostAggregation.sourcelink.json
+/RangeAllocationService/obj/Debug/net6.0/HostAggregation.RangeAllocationService.sourcelink.json
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.AssemblyInfo.cs
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.AssemblyInfoInputs.cache
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.csproj.CoreCompileInputs.cache
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.csproj.FileListAbsolute.txt
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.pdb
+/RangeAllocationService/obj/Debug/net6.0/RangeAllocationService.sourcelink.json
+/RangeAllocationService/obj/RangeAllocationService.csproj.nuget.dgspec.json
+/HostAggregation.FileManagementService/obj/Debug/net6.0/HostAggregation.FileManagementService.sourcelink.json
+/HostAggregation.HelpersService/obj/Debug/net6.0/HostAggregation.HelpersService.sourcelink.json
+/RangeAllocationService/bin/Debug/net6.0/RangeAllocationService.deps.json
+*.pdb
