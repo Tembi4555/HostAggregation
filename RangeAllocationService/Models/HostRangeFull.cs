@@ -28,6 +28,8 @@ namespace HostAggregation.RangeAllocationService.Models
                     return false;
                 if(string.IsNullOrEmpty(FileName))
                     return false;
+                if(Ranges.Count < 1)
+                    return false;
                 return true;
             }
         }

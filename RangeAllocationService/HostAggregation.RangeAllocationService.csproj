@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj" />
+    <ProjectReference Include="..\HostAggregation.HelpersService\HostAggregation.HelpersService.csproj" />
+  </ItemGroup>
+
 </Project>
