@@ -15,6 +15,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
     {
         public static IEnumerable<HostRangeFull> GetListHostRangeFullFromReadFile(IEnumerable<ReadFile> readFiles)
         {
+            List<HostRangeFull> res = new List<HostRangeFull>();
             foreach (ReadFile readFile in readFiles)
             {
                 string dataFromFile = ByteArrayToStringHelper.ConvertWithDefaultEncoding(readFile.DataFromFile);
@@ -25,10 +26,10 @@ namespace HostAggregation.RangeAllocationService.Helpers
                 {
                     string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(splitStringByEnter[i], ", ");
                     List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(splitStrinByComma, readFile.ShortName, i);
+                    res.AddRange(hostRangeFull);
                 }
             }
-            
-            IEnumerable<HostRangeFull> res = new List<HostRangeFull>();
+
             return res;
         }
 
