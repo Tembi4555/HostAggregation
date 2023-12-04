@@ -108,3 +108,4 @@
 /HostAggregation.HelpersService/obj/Debug/net6.0/HostAggregation.HelpersService.sourcelink.json
 /RangeAllocationService/bin/Debug/net6.0/RangeAllocationService.deps.json
 *.pdb
+/RangeAllocationService/obj/Debug/net6.0/HostAggregation.RangeAllocationService.AssemblyInfo.cs
