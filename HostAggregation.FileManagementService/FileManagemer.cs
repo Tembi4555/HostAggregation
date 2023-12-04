@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text;
 
 namespace HostAggregation.FileManagementService
 {
@@ -239,7 +241,28 @@ namespace HostAggregation.FileManagementService
             // For diagnostic purposes.
             Console.WriteLine("Processed {0} files in {1} milliseconds", fileCount, sw.ElapsedMilliseconds);
         }*/
-    }
 
-    
+        public static string SaveFile(string path, string textForSave)
+        {
+            try
+            {
+                using (FileStream fstream = new FileStream(path, FileMode.OpenOrCreate))
+                {
+                    // преобразуем строку в байты
+                    byte[] buffer = Encoding.Default.GetBytes(textForSave);
+                    // запись массива байтов в файл
+                    fstream.Write(buffer, 0, buffer.Length);
+                    return $"Файл сохранен в {path}";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            
+
+        }
+    }
 }

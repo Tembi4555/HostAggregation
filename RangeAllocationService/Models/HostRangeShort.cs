@@ -8,5 +8,6 @@ namespace HostAggregation.RangeAllocationService.Models
 {
     public class HostRangeShort : HostRangesBase
     {
+        public int HostNumber { get; set; }
     }
 }

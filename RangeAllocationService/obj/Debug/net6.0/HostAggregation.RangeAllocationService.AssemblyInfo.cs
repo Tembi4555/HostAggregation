@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HostAggregation.RangeAllocationService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9680f4daf254683e6619271a63ac91bd75ee3cd")]
 [assembly: System.Reflection.AssemblyProductAttribute("HostAggregation.RangeAllocationService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HostAggregation.RangeAllocationService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

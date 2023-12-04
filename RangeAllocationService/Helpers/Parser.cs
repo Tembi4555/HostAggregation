@@ -4,6 +4,7 @@ using HostAggregation.RangeAllocationService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -20,7 +21,6 @@ namespace HostAggregation.RangeAllocationService.Helpers
             {
                 string dataFromFile = ByteArrayToStringHelper.ConvertWithDefaultEncoding(readFile.DataFromFile);
                 string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(dataFromFile, new char[] { '\r', '\n' });
-                List<string[]> parseString = new List<string[]>();
 
                 for(int i = 0; i < splitStringByEnter.Length; i++)
                 {
@@ -31,6 +31,22 @@ namespace HostAggregation.RangeAllocationService.Helpers
             }
 
             return res;
+        }
+
+        public static string StringFromHostRangeShort(List<HostRangeShort> hostsRangeShort)
+        {
+
+            string result = "";
+            foreach(HostRangeShort rangeShort in hostsRangeShort.OrderBy(n => n.HostNumber))
+            {
+                result = result + rangeShort.HostName + ":";
+                foreach(Range range in rangeShort.Ranges)
+                {
+                    result = result + "[" + range.Start + "," + range.End + "],";
+                }
+                result = result.TrimEnd(',') + "\r\n";
+            }
+            return result;
         }
 
         private static List<HostRangeFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName, int stringNumber)
