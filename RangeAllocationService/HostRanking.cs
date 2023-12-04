@@ -24,12 +24,16 @@ namespace HostAggregation.RangeAllocationService
                 };
 
                 var orderHost = hosts.Where(s => s.IsValid).OrderBy(h => h.NumberStringInFile);
-
-                foreach (var host in orderHost)
+                if(orderHost.Count() > 0)
+                {
+                    foreach (var host in orderHost)
                 {
                     hostRangeShort.Ranges.AddRange(host.Ranges);
                 }
                 shorts.Add(hostRangeShort);
+                }
+
+                
             }
             return shorts;
         }
