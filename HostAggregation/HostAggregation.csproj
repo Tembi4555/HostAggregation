@@ -9,7 +9,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj" />
-    <ProjectReference Include="..\RangeAllocationService\RangeAllocationService.csproj" />
+    <ProjectReference Include="..\HostAggregation.HelpersService\HostAggregation.HelpersService.csproj" />
+    <ProjectReference Include="..\RangeAllocationService\HostAggregation.RangeAllocationService.csproj" />
   </ItemGroup>
 
 </Project>

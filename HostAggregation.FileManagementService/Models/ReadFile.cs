@@ -14,7 +14,7 @@ namespace FileManagementService.Models
 
         public Double Size { get; set; }
 
-        public byte[]? DataFromFile { get; set; }
+        public byte[] DataFromFile { get; set; }
         
     }
 }

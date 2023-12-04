@@ -1,6 +1,9 @@
-﻿using HostAggregation.FileManagementService;
-using RangeAllocationService.Models;
+﻿using FileManagementService.Models;
+using HostAggregation.FileManagementService;
+using HostAggregation.HelpersService.Helpers;
+using System.Diagnostics;
 using System.Security;
+using System.Text;
 
 namespace HostAggregation
 {
@@ -22,6 +25,7 @@ namespace HostAggregation
                     {
                         FileInfo file = new FileInfo(f);
                         byte[] data = File.ReadAllBytes(f);
+
                         ReadFile readFile = new ReadFile()
                         {
                             FullName = file.FullName,
@@ -45,6 +49,36 @@ namespace HostAggregation
                 Console.WriteLine(ex.Message);
             }
 
+            List<string> strings = new();
+
+            var sw = Stopwatch.StartNew();
+
+            foreach (var r in readFiles)
+            {
+                string arr = Encoding.UTF8.GetString(r.DataFromFile);
+                strings.Add(arr);
+            }
+            Console.WriteLine($"Enocoding выполнялся {sw.ElapsedMilliseconds}");
+            strings.Clear();
+
+            sw = Stopwatch.StartNew();
+
+            foreach (var r in readFiles)
+            {
+                int count = r.DataFromFile.Length;
+                var stringBuilder = new StringBuilder(count * 2);
+
+                for (var i = 0; i < count; ++i)
+                    stringBuilder.Append(r.DataFromFile[i]);
+
+                var res = stringBuilder.ToString();
+                strings.Add(res);
+            }
+
+            
+
+
+            Console.WriteLine($"Stringuilder выполнялся {sw.ElapsedMilliseconds}");
             Console.ReadKey();
         }
     }

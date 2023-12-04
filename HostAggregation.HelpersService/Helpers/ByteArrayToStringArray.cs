@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HostAggregation.FileManagementService.Helpers
+namespace HostAggregation.HelpersService.Helpers
 {
     public class ByteArrayToStringArray
     {
@@ -13,14 +13,13 @@ namespace HostAggregation.FileManagementService.Helpers
         /// </summary>
         /// <param name="dataInBytes"></param>
         /// <returns></returns>
-        public static string[] ArrStringFromByte(byte[] dataInBytes)
+        public static string[] ConvertArrStringInArrByte(byte[] dataInBytes)
         {
 
             if (dataInBytes.Length > 0)
             {
                 string str = System.Text.Encoding.Default.GetString(dataInBytes);
                 return str?.Split("\r\n");
-                //Comment
             }
 
 

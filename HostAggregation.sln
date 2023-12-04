@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAggregation", "HostAggregation\HostAggregation.csproj", "{2F4A85C5-2AEF-4B5C-B335-7A939F842985}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation", "HostAggregation\HostAggregation.csproj", "{2F4A85C5-2AEF-4B5C-B335-7A939F842985}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAggregation.FileManagementService", "HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj", "{69F2D506-D0DF-4E93-B8D2-C159292D1F5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation.FileManagementService", "HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj", "{69F2D506-D0DF-4E93-B8D2-C159292D1F5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RangeAllocationService", "RangeAllocationService\RangeAllocationService.csproj", "{56B84530-EF54-4CAB-ACCC-287F520002D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation.RangeAllocationService", "RangeAllocationService\HostAggregation.RangeAllocationService.csproj", "{56B84530-EF54-4CAB-ACCC-287F520002D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAggregation.HelpersService", "HostAggregation.HelpersService\HostAggregation.HelpersService.csproj", "{19432636-14FD-41E7-9BDF-33389631960F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{56B84530-EF54-4CAB-ACCC-287F520002D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B84530-EF54-4CAB-ACCC-287F520002D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56B84530-EF54-4CAB-ACCC-287F520002D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19432636-14FD-41E7-9BDF-33389631960F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19432636-14FD-41E7-9BDF-33389631960F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19432636-14FD-41E7-9BDF-33389631960F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19432636-14FD-41E7-9BDF-33389631960F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

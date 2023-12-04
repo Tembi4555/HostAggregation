@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RangeAllocationService.Models
+namespace HostAggregation.RangeAllocationService.Models
 {
+    /// <summary>
+    /// Базовый класс для наименования владельца и списка всех его диапазонов
+    /// </summary>
     public abstract class HostRangesBase
     {
         public string HostName { get; set; }

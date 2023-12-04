@@ -1,0 +1,12 @@
+D:\projects\HostAggregation\RangeAllocationService\bin\Debug\net6.0\HostAggregation.RangeAllocationService.deps.json
+D:\projects\HostAggregation\RangeAllocationService\bin\Debug\net6.0\HostAggregation.RangeAllocationService.dll
+D:\projects\HostAggregation\RangeAllocationService\bin\Debug\net6.0\HostAggregation.RangeAllocationService.pdb
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.GeneratedMSBuildEditorConfig.editorconfig
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.AssemblyInfoInputs.cache
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.AssemblyInfo.cs
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.csproj.CoreCompileInputs.cache
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.sourcelink.json
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.dll
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\refint\HostAggregation.RangeAllocationService.dll
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\HostAggregation.RangeAllocationService.pdb
+D:\projects\HostAggregation\RangeAllocationService\obj\Debug\net6.0\ref\HostAggregation.RangeAllocationService.dll

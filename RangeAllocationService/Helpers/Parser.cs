@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HostAggregation.RangeAllocationService.Models
+namespace HostAggregation.RangeAllocationService.Helpers
 {
-    public class HostRangeShort : HostRangesBase
+    public class Parser
     {
+
     }
 }
