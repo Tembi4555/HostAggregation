@@ -13,4 +13,10 @@
     <ProjectReference Include="..\RangeAllocationService\HostAggregation.RangeAllocationService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Program.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
 </Project>

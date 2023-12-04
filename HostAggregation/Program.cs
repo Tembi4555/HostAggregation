@@ -1,6 +1,8 @@
 ﻿using FileManagementService.Models;
 using HostAggregation.FileManagementService;
 using HostAggregation.HelpersService.Helpers;
+using HostAggregation.RangeAllocationService.Helpers;
+using HostAggregation.RangeAllocationService.Models;
 using System.Diagnostics;
 using System.Security;
 using System.Text;
@@ -11,7 +13,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"D:\projects\example-generator\Output";
+            string directoryName = @"C:\example-generator\Output";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -25,6 +27,7 @@ namespace HostAggregation
                     {
                         FileInfo file = new FileInfo(f);
                         byte[] data = File.ReadAllBytes(f);
+                        //string data = File.ReadAllText(f);
 
                         ReadFile readFile = new ReadFile()
                         {
@@ -49,36 +52,21 @@ namespace HostAggregation
                 Console.WriteLine(ex.Message);
             }
 
-            List<string> strings = new();
+            var readFilesOrderBy = readFiles.OrderBy(r => r.ShortName);
 
-            var sw = Stopwatch.StartNew();
-
-            foreach (var r in readFiles)
-            {
-                string arr = Encoding.UTF8.GetString(r.DataFromFile);
-                strings.Add(arr);
-            }
-            Console.WriteLine($"Enocoding выполнялся {sw.ElapsedMilliseconds}");
-            strings.Clear();
-
-            sw = Stopwatch.StartNew();
-
-            foreach (var r in readFiles)
-            {
-                int count = r.DataFromFile.Length;
-                var stringBuilder = new StringBuilder(count * 2);
-
-                for (var i = 0; i < count; ++i)
-                    stringBuilder.Append(r.DataFromFile[i]);
-
-                var res = stringBuilder.ToString();
-                strings.Add(res);
-            }
-
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             
+            /*ReadFile readFile = readFilesOrderBy.FirstOrDefault();
 
+            List<ReadFile> list = new List<ReadFile>(); list.Add(readFile);*/
 
-            Console.WriteLine($"Stringuilder выполнялся {sw.ElapsedMilliseconds}");
+            IEnumerable<HostRangeFull> res = HostAggregation.RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFilesOrderBy);
+
+            Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
+            sw.Stop();
+            Console.WriteLine($"Результат {res.Count()} хостов");
+
             Console.ReadKey();
         }
     }
