@@ -1,7 +1,6 @@
 ﻿using FileManagementService.Models;
 using HostAggregation.FileManagementService;
 using HostAggregation.HelpersService.Helpers;
-using HostAggregation.RangeAllocationService;
 using HostAggregation.RangeAllocationService.Helpers;
 using HostAggregation.RangeAllocationService.Models;
 using System.Diagnostics;
@@ -14,7 +13,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"D:\projects\example-generator\Output";
+            string directoryName = @"C:\example-generator\Output";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -29,6 +28,7 @@ namespace HostAggregation
                         FileInfo file = new FileInfo(f);
                         byte[] data = File.ReadAllBytes(f);
                         //string data = File.ReadAllText(f);
+                        //string[] data = File.ReadAllLines(f);
 
                         ReadFile readFile = new ReadFile()
                         {
@@ -53,29 +53,17 @@ namespace HostAggregation
                 Console.WriteLine(ex.Message);
             }
 
-            var readFilesOrderBy = readFiles.OrderBy(r => r.ShortName);
+            //var readFilesOrderBy = readFiles.OrderBy(r => r.ShortName);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
             
-            ReadFile readFile = readFilesOrderBy.FirstOrDefault();
-
-            List<ReadFile> list = new List<ReadFile>(); list.Add(readFile);
-
-            IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(list);
+            //IEnumerable<HostRangeFull> res = HostAggregation.RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFilesOrderBy);
+            IEnumerable<HostRangeFull> res = HostAggregation.RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
 
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
-
             sw.Stop();
             Console.WriteLine($"Результат {res.Count()} хостов");
-
-            List<HostRangeShort> shorts = HostRanking.GetRankingHost(res);
-
-            string result = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(shorts);
-            var GetDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\hosts.txt";
-            string saveRes = FileManagementService.FileManagemer.SaveFile(path, result);
-            Console.WriteLine(saveRes);
 
             Console.ReadKey();
         }

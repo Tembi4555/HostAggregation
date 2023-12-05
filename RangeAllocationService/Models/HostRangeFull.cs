@@ -12,8 +12,6 @@ namespace HostAggregation.RangeAllocationService.Models
     public class HostRangeFull : HostRangesBase
     {
         private string _invalidMessage = "";
-        public string Comment { get; set; }
-        public string Header { get; set; }
         public ExInClusionFlag ExInClusionFlag { get; set; }
         public int NumberStringInFile { get; set; }
         public string FileName { get; set; }
@@ -26,16 +24,6 @@ namespace HostAggregation.RangeAllocationService.Models
                     _invalidMessage = "Отсутствует имя хоста";
                     return false;
                 }   
-                if(string.IsNullOrEmpty(Comment))
-                {
-                    _invalidMessage = "Отсутствует комментарий";
-                    return false;
-                }
-                if (string.IsNullOrEmpty(Header))
-                {
-                    _invalidMessage = "Отсутствует заголовок";
-                    return false;
-                }
                 if (string.IsNullOrEmpty(FileName))
                 {
                     _invalidMessage = "Отсутствует имя файла из которого была получена строка";
@@ -46,11 +34,7 @@ namespace HostAggregation.RangeAllocationService.Models
                     _invalidMessage = "Отсутствуют диапазоны разбиения";
                     return false;
                 }
-                if(HostNumber == null)
-                {
-                    _invalidMessage = "Отсутствует номер хоста";
-                    return false;
-                }
+
                 return true;
             }
         }

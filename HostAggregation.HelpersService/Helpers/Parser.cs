@@ -15,6 +15,7 @@ namespace HostAggregation.HelpersService.Helpers
             string[] elements = stringFromParse.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             return elements;
         }
+
         public static string[] StringToArrayString(string stringFromParse, string separators)
         {
             string[] elements = stringFromParse.Split(separators, StringSplitOptions.RemoveEmptyEntries);

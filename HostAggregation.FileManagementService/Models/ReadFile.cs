@@ -15,6 +15,13 @@ namespace FileManagementService.Models
         public Double Size { get; set; }
 
         public byte[] DataFromFile { get; set; }
-        
+        public string DataInString
+        {
+            get
+            {
+                return Encoding.Default.GetString(DataFromFile);
+            }
+        }
+
     }
 }

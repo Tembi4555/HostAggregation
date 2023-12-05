@@ -13,23 +13,5 @@ namespace HostAggregation.RangeAllocationService.Models
     {
         public string HostName { get; set; }
         public List<Range> Ranges { get; set; } = new List<Range>();
-        public int? HostNumber 
-        {
-            get 
-            { 
-                if(!String.IsNullOrEmpty(HostName))
-                {
-                    bool hostNumb = int.TryParse(HostName?.Replace("host", ""), out int hostNumber);
-                    if(hostNumb)
-                    {
-                        return hostNumber;
-                    }
-                    else
-                        return null;
-                    
-                }
-                return null;
-            }
-        }
     }
 }
