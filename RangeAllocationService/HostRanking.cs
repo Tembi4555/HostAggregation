@@ -20,7 +20,6 @@ namespace HostAggregation.RangeAllocationService
                 HostRangeShort hostRangeShort = new HostRangeShort()
                 {
                     HostName = hosts.Key,
-                    HostNumber = hostNumber
                 };
 
                 var orderHost = hosts.Where(s => s.IsValid).OrderBy(h => h.NumberStringInFile);
