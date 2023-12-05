@@ -19,8 +19,9 @@ namespace HostAggregation.RangeAllocationService.Helpers
             List<HostRangeFull> res = new List<HostRangeFull>();
             foreach (ReadFile readFile in readFiles)
             {
-                string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
-                List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(splitStringByEnter, readFile.ShortName);
+                //string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
+                string str = readFile.DataInString;
+                List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
                 res.AddRange(hostRangeFull);
 
             }
@@ -37,8 +38,9 @@ namespace HostAggregation.RangeAllocationService.Helpers
             {
                 foreach (ReadFile readFile in readFiles)
                 {
-                    string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
-                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(splitStringByEnter, readFile.ShortName);
+                    //string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
+                    string str = readFile.DataInString;
+                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
                     res.AddRange(hostRangeFull);
 
                 }
@@ -47,10 +49,13 @@ namespace HostAggregation.RangeAllocationService.Helpers
             {
                 Parallel.ForEach(readFiles, (readFile) =>
                 {
-                    string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
-                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(splitStringByEnter, readFile.ShortName);
-                    res.AddRange(hostRangeFull);
-
+                    //string[] splitStringByEnter = HelpersService.Helpers.Parser.StringToArrayString(readFile.DataInString, new char[] { '\r', '\n' });
+                    //string str = readFile.DataInString;
+                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(readFile.DataInString, readFile.ShortName);
+                    lock(res)
+                    {
+                        res.AddRange(hostRangeFull);
+                    }
                 });
                 
             }
@@ -124,18 +129,22 @@ namespace HostAggregation.RangeAllocationService.Helpers
 
         private static List<HostRangeFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName)
         {
-            List<HostRangeFull> hostsRangeFull = new();
-            HostRangeFull hostRangeFull = new HostRangeFull();
-            hostRangeFull.FileName = fileName;
-            for(int i = 0; i < arrayFromHostRange.Length; i++)
+            List<HostRangeFull> hostsRangeFullList = new();
+            
+
+            for (int i = 0; i < arrayFromHostRange.Length; i++)
             {
                 string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(arrayFromHostRange[i], ", ");
+
+                HostRangeFull hostRangeFull = new HostRangeFull();
+                hostRangeFull.FileName = fileName;
                 hostRangeFull.NumberStringInFile = i;
+
                 string[] hosts = GetHostsNameFromStringArr(splitStrinByComma);
 
                 foreach (string str in splitStrinByComma)
                 {
-                    if (/*str?.Trim()?.StartsWith("type")*/ str?.ToLower()?.Contains("type") == true)
+                    if (str?.ToLower()?.Contains("type") == true)
                     {
                         if (str?.ToLower()?.Contains("include") == true)
                             hostRangeFull.ExInClusionFlag = ExInClusionFlag.Include;
@@ -144,7 +153,65 @@ namespace HostAggregation.RangeAllocationService.Helpers
                             hostRangeFull.ExInClusionFlag = ExInClusionFlag.Exclude;
                     }
 
-                    if (/*str?.Trim()?.StartsWith("range")*/ str?.ToLower()?.Contains("range") == true)
+                    if (str?.ToLower()?.Contains("range") == true)
+                    {
+                        List<int> ints = HelpersService.Helpers.Parser.GetIntsFromString(str);
+                        Range range = new Range();
+                        if (ints.Count > 1)
+                        {
+                            range.Start = ints[0];
+                            range.End = ints[1];
+                        }
+
+                        if (range.IsValid)
+                            hostRangeFull.Ranges.Add(range);
+                    }
+                }
+                foreach (string host in hosts)
+                {
+                    HostRangeFull hostRangeFullResult = new HostRangeFull()
+                    {
+                        HostName = host,
+                        Ranges = hostRangeFull.Ranges,
+                        ExInClusionFlag = hostRangeFull.ExInClusionFlag,
+                        FileName = hostRangeFull.FileName,
+                        NumberStringInFile = hostRangeFull.NumberStringInFile
+                    };
+                    hostsRangeFullList.Add(hostRangeFullResult);
+                }
+            }
+            
+            return hostsRangeFullList;
+        }
+
+        private static List<HostRangeFull> GetHostRangeFullFromStringArray(string dataStr, string fileName)
+        {
+            string[] arrayFromHostRange = dataStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            List<HostRangeFull> hostsRangeFull = new();
+            
+
+            for (int i = 0; i < arrayFromHostRange.Length; i++)
+            {
+                HostRangeFull hostRangeFull = new HostRangeFull();
+                hostRangeFull.FileName = fileName;
+                hostRangeFull.NumberStringInFile = i;
+
+                string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(arrayFromHostRange[i], ", ");
+                
+                string[] hosts = GetHostsNameFromStringArr(splitStrinByComma);
+
+                foreach (string str in splitStrinByComma)
+                {
+                    if (str?.ToLower()?.Contains("type") == true)
+                    {
+                        if (str?.ToLower()?.Contains("include") == true)
+                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Include;
+
+                        if (str?.ToLower()?.Contains("exclude") == true)
+                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Exclude;
+                    }
+
+                    if (str?.ToLower()?.Contains("range") == true)
                     {
                         List<int> ints = HelpersService.Helpers.Parser.GetIntsFromString(str);
                         Range range = new Range();
@@ -171,14 +238,13 @@ namespace HostAggregation.RangeAllocationService.Helpers
                     hostsRangeFull.Add(hostRangeFullResult);
                 }
             }
-            
+
             return hostsRangeFull;
         }
 
 
         private static string[] GetHostsNameFromStringArr(string[] strWithHosts)
         {
-            //string hostFull = strWithHosts.Where(s => s?.Trim()?.StartsWith("hosts") == true).FirstOrDefault();
             string hostFull = strWithHosts.Where(s => s?.ToLower()?.Contains("hosts") == true).FirstOrDefault();
             string[] hosts = HelpersService.Helpers.Parser.StringToArrayString(hostFull, new char[] { ',',')','(' });
             return hosts.Where(s => s != "hosts:").ToArray();
