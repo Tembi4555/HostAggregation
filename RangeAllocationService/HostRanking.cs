@@ -9,32 +9,73 @@ namespace HostAggregation.RangeAllocationService
 {
     public class HostRanking
     {
-        public static List<HostRangeShort> GetRankingHost(IEnumerable<HostRangeFull> hostRangeFulls)
+        public static List<HostRangeShort> GetRankingHost(IEnumerable<HostRangeFull> hostsFromFileList)
         {
-            IEnumerable<IGrouping<string, HostRangeFull>> groupByHost = hostRangeFulls.GroupBy(h => h.HostName);
-            List<HostRangeShort> shorts = new List<HostRangeShort>();
+            IOrderedEnumerable<IGrouping<string, HostRangeFull>> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
+                .OrderBy(h => h.HostName)
+                .ThenBy(s => s.NumberStringInFile)
+                .GroupBy(f => f.FileName)
+                .OrderBy(k => k.Key);
 
-            foreach (var hosts in groupByHost)
+            List<HostRangeShort> hostRangeShorts = new List<HostRangeShort>();
+
+            foreach (IGrouping<string, HostRangeFull> groupByFileName in validAndGroupHost)
             {
-                bool hostNumb = int.TryParse(hosts.Key?.Replace("host", ""), out int hostNumber);
-                HostRangeShort hostRangeShort = new HostRangeShort()
+                
+                //var ranges = groupByFileName.SelectMany(h => h.Ranges);
+                List<int?[]> includeRangeList = new List<int?[]>();
+                List<int?[]> excludeRangeList = new List<int?[]>();
+                foreach (HostRangeFull hostRangeFull in groupByFileName)
                 {
-                    HostName = hosts.Key,
-                };
+                    HostRangeShort hostRangeShort = new HostRangeShort();
+                    hostRangeShort.HostName = groupByFileName.First().HostName;
 
-                var orderHost = hosts.Where(s => s.IsValid).OrderBy(h => h.NumberStringInFile);
-                if(orderHost.Count() > 0)
-                {
-                    foreach (var host in orderHost)
-                {
-                    hostRangeShort.Ranges.AddRange(host.Ranges);
+                    if (hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
+                    {
+                        if(includeRangeList.Count() < 1)
+                        {
+                            includeRangeList.Add(hostRangeFull.Ints);
+                            continue;
+                        }
+                            
+                        if (RangeAbsorptionInclude(includeRangeList, hostRangeFull.Ints))
+                            continue;
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    hostRangeShort.Ranges.AddRange(includeRangeList);
+                    hostRangeShorts.Add(hostRangeShort);
+                    includeRangeList.Clear();
+                    excludeRangeList.Clear();
                 }
-                shorts.Add(hostRangeShort);
-                }
-
                 
             }
-            return shorts;
+
+            return hostRangeShorts;
+        }
+
+        /// <summary>
+        /// Полное вхождение одного интервала в другой
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        private static bool RangeAbsorptionInclude(List<int?[]> rangeList, int?[] includeRange)
+        {
+            for(int i = 0; i < rangeList.Count(); i++)
+            {
+                if (rangeList[i][0] <= includeRange[0] && rangeList[i][1] >= includeRange[1])
+                    return true;
+                if (rangeList[i][0] >= includeRange[0] && rangeList[i][1] <= includeRange[1])
+                {
+                    rangeList[i] = includeRange;
+                    return true;
+                }
+            }
+            
+            return false;
         }
     }
 }

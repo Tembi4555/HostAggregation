@@ -13,7 +13,7 @@ namespace HostAggregation.RangeAllocationService.Models
     {
         public string HostName { get; set; }
         //public List<Range> Ranges { get; set; } = new List<Range>();
-        public List<int?[]> Ranges { get; set; } = new List<int?[]>();
+        public int?[] Ranges { get; set; } = new int?[2];
 
     }
 }
