@@ -12,6 +12,8 @@ namespace HostAggregation.RangeAllocationService.Models
     public abstract class HostRangesBase
     {
         public string HostName { get; set; }
-        public List<Range> Ranges { get; set; } = new List<Range>();
+        //public List<Range> Ranges { get; set; } = new List<Range>();
+        public List<int?[]> Ranges { get; set; } = new List<int?[]>();
+
     }
 }

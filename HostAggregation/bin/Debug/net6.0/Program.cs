@@ -53,19 +53,20 @@ namespace HostAggregation
                 Console.WriteLine(ex.Message);
             }
 
-            //var readFilesOrderBy = readFiles.OrderBy(r => r.ShortName);
+            //var readF = readFiles.Where(s=> s.ShortName == "file00000 — копия.txt");
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
             
             //IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
             IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
+            //Queue<HostRangeShort> res = RangeAllocationService.Helpers.Parser.GetQueueHostRangeFullFromReadFile(readFiles);
             
 
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
             sw.Stop();
-            Console.WriteLine($"Результат {res.Count()} хостов");
-            var file000 = res.Where(x => x.FileName == "file00000 — копия.txt").ToList();
+            Console.WriteLine($"Результат {res.Where(r => r.IsValid == true).Count()} хостов");
+            //var file000 = res.Where(x => x.FileName == "file00000 — копия.txt").ToList();
 
 
             Console.ReadKey();
