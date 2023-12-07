@@ -29,17 +29,36 @@ namespace HostAggregation.RangeAllocationService
                         if(excludeHostRangeBases.Count() == 0)
                             excludeHostRangeBases.Add(hostRangeFull);
                         if (RangeAbsorption(excludeHostRangeBases, hostRangeFull.Ranges))
+                        {
+                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
                             continue;
-
+                        }
+                        else if(PartialIntersection(excludeHostRangeBases, hostRangeFull.Ranges))
+                        {
+                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
+                            continue;
+                        }
+                        else
+                        {
+                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
+                        }
                     }
                     else if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
                     {
                         if (includeHostRangeBases.Count() == 0)
                             includeHostRangeBases.Add(hostRangeFull);
+                        if (RangeAbsorption(includeHostRangeBases, hostRangeFull.Ranges))
+                        {
+                            continue;
+                        }
+                        else if (PartialIntersection(includeHostRangeBases, hostRangeFull.Ranges))
+                        {
+                            continue;
+                        }
                     }
                     else
                     {
-                        contin
+                        continue;
                     }
                 }
             }
@@ -95,6 +114,29 @@ namespace HostAggregation.RangeAllocationService
             }
 
             return false;
+        }
+
+        private static void GetInclusionExclusion(IEnumerable<HostRangesBase> inclusions, IEnumerable<HostRangesBase> exclusions)
+        {
+            for (int i; i)
+            {
+
+            }
+            /*foreach(var exc in exclusions)
+            {
+                foreach(var inc in inclusions)
+                {
+                    if (exc.Ranges[0] <= inc.Ranges[0] && exc.Ranges[1] >= inc.Ranges[1])
+                    {
+                        
+                    }
+
+                    if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
+                    {
+                        hrb.Ranges = includeRange;
+                    }
+                }
+            }*/
         }
     }
 }
