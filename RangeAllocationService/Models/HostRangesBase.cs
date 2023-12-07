@@ -9,11 +9,20 @@ namespace HostAggregation.RangeAllocationService.Models
     /// <summary>
     /// Базовый класс для наименования владельца и списка всех его диапазонов
     /// </summary>
-    public abstract class HostRangesBase
+    public class HostRangesBase
     {
         public string HostName { get; set; }
         //public List<Range> Ranges { get; set; } = new List<Range>();
         public int?[] Ranges { get; set; } = new int?[2];
 
+        public ExInClusionFlag ExInClusionFlag { get; set; }
+
+    }
+
+    public enum ExInClusionFlag
+    {
+        Include,
+        Exclude,
+        Undefined
     }
 }

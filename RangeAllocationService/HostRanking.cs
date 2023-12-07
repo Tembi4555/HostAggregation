@@ -9,51 +9,50 @@ namespace HostAggregation.RangeAllocationService
 {
     public class HostRanking
     {
-        public static List<HostRangeShort> GetRankingHost(IEnumerable<HostRangeFull> hostsFromFileList)
+        public static List<HostRangesBase> GetRankingHost(IEnumerable<HostRangesFull> hostsFromFileList)
         {
-            IOrderedEnumerable<IGrouping<string, HostRangeFull>> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
+            IOrderedEnumerable<IGrouping<string, HostRangesFull>> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
                 .OrderBy(h => h.HostName)
                 .ThenBy(s => s.NumberStringInFile)
                 .GroupBy(f => f.FileName)
                 .OrderBy(k => k.Key);
 
-            List<HostRangeShort> hostRangeShorts = new List<HostRangeShort>();
+            List<HostRangesBase> hostRangeBases = new List<HostRangesBase>();
 
-            foreach (IGrouping<string, HostRangeFull> groupByFileName in validAndGroupHost)
+            foreach (IGrouping<string, HostRangesFull> groupByFileName in validAndGroupHost)
             {
-                
-                //var ranges = groupByFileName.SelectMany(h => h.Ranges);
-                List<int?[]> includeRangeList = new List<int?[]>();
-                List<int?[]> excludeRangeList = new List<int?[]>();
-                foreach (HostRangeFull hostRangeFull in groupByFileName)
+                var currentHrb = hostRangeBases.Where(h => h.HostName == groupByFileName.Key);
+                hostRangeBases.RemoveAll(currentHrb);
+                foreach (HostRangesFull hostRangeFull in groupByFileName)
                 {
-                    HostRangeShort hostRangeShort = new HostRangeShort();
-                    hostRangeShort.HostName = groupByFileName.First().HostName;
+                    if(currentHrb.Count() == 0)
+                        hostRangeBases.Add(hostRangeFull);
 
-                    if (hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
+                    if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Exclude)
                     {
-                        if(includeRangeList.Count() < 1)
-                        {
-                            includeRangeList.Add(hostRangeFull.Ints);
+                        continue;
+                    }
+                    else if (hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
+                    {   
+                        if (RangeAbsorptionInclude(currentHrb, hostRangeFull.Ranges)) // полное слияние
                             continue;
-                        }
-                            
-                        if (RangeAbsorptionInclude(includeRangeList, hostRangeFull.Ints))
+                        else if(PartialIntersection(currentHrb, hostRangeFull.Ranges))
                             continue;
                         else
                         {
-                            break;
+                            currentHrb.Append(hostRangeFull);
+                            continue;
                         }
                     }
-                    hostRangeShort.Ranges.AddRange(includeRangeList);
-                    hostRangeShorts.Add(hostRangeShort);
-                    includeRangeList.Clear();
-                    excludeRangeList.Clear();
+                    else
+                    {
+                        continue;
+                    }
                 }
-                
+                hostRangeBases.AddRange(currentHrb);
             }
 
-            return hostRangeShorts;
+            return hostRangeBases;
         }
 
         /// <summary>
@@ -62,19 +61,39 @@ namespace HostAggregation.RangeAllocationService
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        private static bool RangeAbsorptionInclude(List<int?[]> rangeList, int?[] includeRange)
+        private static bool RangeAbsorptionInclude(IEnumerable<HostRangesBase> hostRangeBases, int?[] includeRange)
         {
-            for(int i = 0; i < rangeList.Count(); i++)
+            foreach(HostRangesBase hrb in hostRangeBases.Where(i => i.ExInClusionFlag == ExInClusionFlag.Include))
             {
-                if (rangeList[i][0] <= includeRange[0] && rangeList[i][1] >= includeRange[1])
+                if (hrb.Ranges[0] <= includeRange[0] && hrb.Ranges[1] >= includeRange[1])
                     return true;
-                if (rangeList[i][0] >= includeRange[0] && rangeList[i][1] <= includeRange[1])
+                if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
                 {
-                    rangeList[i] = includeRange;
+                    hrb.Ranges = includeRange;
                     return true;
                 }
             }
             
+            return false;
+        }
+
+        private static bool PartialIntersection(IEnumerable<HostRangesBase> hostRangeBases, int?[] includeRange)
+        {
+            foreach (HostRangesBase hrb in hostRangeBases.Where(i => i.ExInClusionFlag == ExInClusionFlag.Include))
+            {
+                if (hrb.Ranges[0] <= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
+                {
+                    hrb.Ranges[1] = includeRange[1];
+                    return true;
+                }
+
+                if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[1] >= includeRange[1])
+                {
+                    hrb.Ranges[0] = includeRange[0];
+                    return true;
+                }
+            }
+
             return false;
         }
     }

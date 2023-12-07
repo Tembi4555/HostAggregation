@@ -21,13 +21,13 @@ namespace HostAggregation.RangeAllocationService.Helpers
         /// </summary>
         /// <param name="readFiles"></param>
         /// <returns></returns>
-        public static IEnumerable<HostRangeFull> GetListHostRangeFullFromReadFile(IEnumerable<ReadFile> readFiles)
+        public static IEnumerable<HostRangesFull> GetListHostRangeFullFromReadFile(IEnumerable<ReadFile> readFiles)
         {
-            List<HostRangeFull> res = new List<HostRangeFull>();
+            List<HostRangesFull> res = new List<HostRangesFull>();
             foreach (ReadFile readFile in readFiles)
             {
                 string str = readFile.DataInString;
-                List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
+                List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
                 res.AddRange(hostRangeFull);
 
             }
@@ -35,17 +35,17 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return res;
         }
 
-        public static IEnumerable<HostRangeFull> GetListHostRangeFullFromReadFileWithParallel(IEnumerable<ReadFile> readFiles)
+        public static IEnumerable<HostRangesFull> GetListHostRangeFullFromReadFileWithParallel(IEnumerable<ReadFile> readFiles)
         {
             int procCount = Environment.ProcessorCount;
             int fileCount = 0;
-            List<HostRangeFull> res = new List<HostRangeFull>();
+            List<HostRangesFull> res = new List<HostRangesFull>();
             if(readFiles.Count() < procCount)
             {
                 foreach (ReadFile readFile in readFiles)
                 {
                     string str = readFile.DataInString;
-                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
+                    List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
                     res.AddRange(hostRangeFull);
 
                 }
@@ -54,7 +54,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
             {
                 Parallel.ForEach(readFiles, (readFile) =>
                 {
-                    List<HostRangeFull> hostRangeFull = GetHostRangeFullFromStringArray(readFile.DataInString, readFile.ShortName);
+                    List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(readFile.DataInString, readFile.ShortName);
                     lock(res)
                     {
                         res.AddRange(hostRangeFull);
@@ -66,7 +66,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return res;
         }
 
-        public static string StringFromHostRangeShort(List<HostRangeShort> hostsRangeShort)
+        public static string StringFromHostRangeShort(List<HostRangesBase> hostsRangeShort)
         {
             var hostInGroup = hostsRangeShort.GroupBy(n => n.HostName);
             string result = "";
@@ -82,9 +82,9 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return result;
         }
 
-        private static List<HostRangeFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName, int stringNumber)
+        private static List<HostRangesFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName, int stringNumber)
         {
-            List<HostRangeFull> hostsRangeFull = new();
+            List<HostRangesFull> hostsRangeFull = new();
             ExInClusionFlag flag = ExInClusionFlag.Undefined;
             string[] hosts = GetHostsNameFromStringArr(arrayFromHostRange);
             List<int> ints = new List<int>();
@@ -107,7 +107,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
             }
             foreach (string host in hosts)
             {
-                HostRangeFull hostRangeFullResult = new HostRangeFull()
+                HostRangesFull hostRangeFullResult = new HostRangesFull()
                 {
                     HostName = host,
                     
@@ -182,10 +182,10 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return hostsRangeFullList;
         }*/
 
-        private static List<HostRangeFull> GetHostRangeFullFromStringArray(string dataStr, string fileName)
+        private static List<HostRangesFull> GetHostRangeFullFromStringArray(string dataStr, string fileName)
         {
             string[] arrayFromHostRange = dataStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-            List<HostRangeFull> hostsRangeFull = new();
+            List<HostRangesFull> hostsRangeFull = new();
             
             for (int i = 0; i < arrayFromHostRange.Length; i++)
             {
@@ -235,10 +235,11 @@ namespace HostAggregation.RangeAllocationService.Helpers
                     hostsRangeFull.Add(hostRangeFullResult);
                 }*/
                 ExInClusionFlag flag = ExInClusionFlag.Undefined;
-                string[] hosts = GetHostsNameFromStringArr(arrayFromHostRange);
+                
                 List<int> ints = new List<int>();
-
-                foreach (string str in arrayFromHostRange)
+                string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(arrayFromHostRange[i], ", ");
+                string[] hosts = GetHostsNameFromStringArr(splitStrinByComma);
+                foreach (string str in splitStrinByComma)
                 {
                     if (str?.Trim()?.StartsWith("type") == true)
                     {
@@ -256,7 +257,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
                 }
                 foreach (string host in hosts)
                 {
-                    HostRangeFull hostRangeFullResult = new HostRangeFull()
+                    HostRangesFull hostRangeFullResult = new HostRangesFull()
                     {
                         HostName = host,
 

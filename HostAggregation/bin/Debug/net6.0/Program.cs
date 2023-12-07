@@ -60,7 +60,7 @@ namespace HostAggregation
             sw.Start();
             
             //IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
-            IEnumerable<HostRangeFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
+            IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
 
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
             sw.Stop();

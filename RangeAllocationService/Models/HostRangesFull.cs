@@ -9,11 +9,11 @@ namespace HostAggregation.RangeAllocationService.Models
     /// <summary>
     /// Полная модель 
     /// </summary>
-    public class HostRangeFull : HostRangesBase
+    public class HostRangesFull : HostRangesBase
     {
         private string _invalidMessage = "";
         //public override List<int?[]> Ranges { get; set; }
-        public ExInClusionFlag ExInClusionFlag { get; set; }
+        
         public int NumberStringInFile { get; set; }
         public string FileName { get; set; }
         public bool IsValid 
@@ -53,10 +53,5 @@ namespace HostAggregation.RangeAllocationService.Models
 
     }
 
-    public enum ExInClusionFlag
-    {
-        Include,
-        Exclude,
-        Undefined
-    }
+    
 }
