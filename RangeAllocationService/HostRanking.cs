@@ -28,31 +28,51 @@ namespace HostAggregation.RangeAllocationService
                     {
                         if(excludeHostRangeBases.Count() == 0)
                             excludeHostRangeBases.Add(hostRangeFull);
-                        if (RangeAbsorption(excludeHostRangeBases, hostRangeFull.Ranges))
+                        if (RangeAbsorption(excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                            hostRangeFull.Ranges))
                         {
-                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
                             continue;
                         }
-                        else if(PartialIntersection(excludeHostRangeBases, hostRangeFull.Ranges))
+                        else if(PartialIntersection(excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName),
+                            hostRangeFull.Ranges))
                         {
-                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
                             continue;
                         }
                         else
                         {
-                            GetInclusionExclusion(includeHostRangeBases, excludeHostRangeBases);
+                            excludeHostRangeBases.Add(hostRangeFull);
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
+                            continue;
                         }
                     }
                     else if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
                     {
                         if (includeHostRangeBases.Count() == 0)
                             includeHostRangeBases.Add(hostRangeFull);
-                        if (RangeAbsorption(includeHostRangeBases, hostRangeFull.Ranges))
+                        if (RangeAbsorption(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                            hostRangeFull.Ranges))
                         {
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName),
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
                             continue;
                         }
-                        else if (PartialIntersection(includeHostRangeBases, hostRangeFull.Ranges))
+                        else if (PartialIntersection(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName), 
+                            hostRangeFull.Ranges))
                         {
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName),
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
+                            continue;
+                        }
+                        else
+                        {
+                            includeHostRangeBases.Add(hostRangeFull);
+                            GetInclusionExclusion(includeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName),
+                                excludeHostRangeBases.Where(h => h.HostName == hostRangeFull.HostName));
                             continue;
                         }
                     }
@@ -118,9 +138,12 @@ namespace HostAggregation.RangeAllocationService
 
         private static void GetInclusionExclusion(IEnumerable<HostRangesBase> inclusions, IEnumerable<HostRangesBase> exclusions)
         {
-            for (int i; i)
+            for (int i = 0; i < exclusions.Count(); i++)
             {
-
+                for(int j = 0; j < inclusions.Count(); j++)
+                {
+                    if (exclusions.ToList()[i].Ranges[0] <= )
+                }
             }
             /*foreach(var exc in exclusions)
             {
