@@ -9,10 +9,11 @@ namespace HostAggregation.RangeAllocationService.Models
     /// <summary>
     /// Полная модель 
     /// </summary>
-    public class HostRangeFull : HostRangesBase
+    public class HostRangesFull : HostRangesBase
     {
         private string _invalidMessage = "";
-        public ExInClusionFlag ExInClusionFlag { get; set; }
+        //public override List<int?[]> Ranges { get; set; }
+        
         public int NumberStringInFile { get; set; }
         public string FileName { get; set; }
         public bool IsValid 
@@ -29,11 +30,17 @@ namespace HostAggregation.RangeAllocationService.Models
                     _invalidMessage = "Отсутствует имя файла из которого была получена строка";
                     return false;
                 }
-                if(Ranges.Count < 1)
+                if(ExInClusionFlag == ExInClusionFlag.Undefined)
                 {
-                    _invalidMessage = "Отсутствуют диапазоны разбиения";
+                    _invalidMessage = "Отсутствует тип включения или исключения диапазона";
                     return false;
                 }
+                if (Ranges[1] < Ranges[0] || Ranges[0] == null || Ranges[1] == null)
+                {
+                    _invalidMessage = "Отсутствуют или некорректные диапазоны разбиения";
+                    return false;
+                }    
+                    
 
                 return true;
             }
@@ -43,11 +50,8 @@ namespace HostAggregation.RangeAllocationService.Models
         { 
             get { return _invalidMessage; }
         }
+
     }
 
-    public enum ExInClusionFlag
-    {
-        Include,
-        Exclude
-    }
+    
 }

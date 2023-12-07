@@ -1,6 +1,7 @@
 ﻿using FileManagementService.Models;
 using HostAggregation.FileManagementService;
 using HostAggregation.HelpersService.Helpers;
+using HostAggregation.RangeAllocationService;
 using HostAggregation.RangeAllocationService.Helpers;
 using HostAggregation.RangeAllocationService.Models;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"C:\example-generator\Output";
+            string directoryName = @"D:\projects\example-generator\Output\t";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -59,13 +60,14 @@ namespace HostAggregation
             sw.Start();
             
             //IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
-            IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
-            //Queue<HostRangeShort> res = RangeAllocationService.Helpers.Parser.GetQueueHostRangeFullFromReadFile(readFiles);
-            
+            IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
 
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
             sw.Stop();
-            Console.WriteLine($"Результат {res.Where(r => r.IsValid == true).Count()} хостов");
+
+            var shorts = HostRanking.GetRankingHost(hostsFromFileList);
+            
+
             //var file000 = res.Where(x => x.FileName == "file00000 — копия.txt").ToList();
 
 
