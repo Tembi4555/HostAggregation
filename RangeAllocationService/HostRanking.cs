@@ -17,42 +17,34 @@ namespace HostAggregation.RangeAllocationService
                 .GroupBy(f => f.FileName)
                 .OrderBy(k => k.Key);
 
-            List<HostRangesBase> hostRangeBases = new List<HostRangesBase>();
+            List<HostRangesBase> includeHostRangeBases = new List<HostRangesBase>();
+            List<HostRangesBase> excludeHostRangeBases = new List<HostRangesBase>();
 
             foreach (IGrouping<string, HostRangesFull> groupByFileName in validAndGroupHost)
             {
-                var currentHrb = hostRangeBases.Where(h => h.HostName == groupByFileName.Key);
-                hostRangeBases.RemoveAll(currentHrb);
                 foreach (HostRangesFull hostRangeFull in groupByFileName)
                 {
-                    if(currentHrb.Count() == 0)
-                        hostRangeBases.Add(hostRangeFull);
-
                     if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Exclude)
                     {
-                        continue;
+                        if(excludeHostRangeBases.Count() == 0)
+                            excludeHostRangeBases.Add(hostRangeFull);
+                        if (RangeAbsorption(excludeHostRangeBases, hostRangeFull.Ranges))
+                            continue;
+
                     }
-                    else if (hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
-                    {   
-                        if (RangeAbsorptionInclude(currentHrb, hostRangeFull.Ranges)) // полное слияние
-                            continue;
-                        else if(PartialIntersection(currentHrb, hostRangeFull.Ranges))
-                            continue;
-                        else
-                        {
-                            currentHrb.Append(hostRangeFull);
-                            continue;
-                        }
+                    else if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
+                    {
+                        if (includeHostRangeBases.Count() == 0)
+                            includeHostRangeBases.Add(hostRangeFull);
                     }
                     else
                     {
-                        continue;
+                        contin
                     }
                 }
-                hostRangeBases.AddRange(currentHrb);
             }
 
-            return hostRangeBases;
+            return includeHostRangeBases;
         }
 
         /// <summary>
@@ -61,33 +53,41 @@ namespace HostAggregation.RangeAllocationService
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        private static bool RangeAbsorptionInclude(IEnumerable<HostRangesBase> hostRangeBases, int?[] includeRange)
+        private static bool RangeAbsorption(IEnumerable<HostRangesBase> hostRangeBases, int?[] includeRange)
         {
-            foreach(HostRangesBase hrb in hostRangeBases.Where(i => i.ExInClusionFlag == ExInClusionFlag.Include))
+            foreach(HostRangesBase hrb in hostRangeBases)
             {
                 if (hrb.Ranges[0] <= includeRange[0] && hrb.Ranges[1] >= includeRange[1])
+                {
                     return true;
+                }
+                    
                 if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
                 {
                     hrb.Ranges = includeRange;
-                    return true;
                 }
             }
             
             return false;
         }
 
+        /// <summary>
+        /// Пересечение нитервалов
+        /// </summary>
+        /// <param name="hostRangeBases"></param>
+        /// <param name="includeRange"></param>
+        /// <returns></returns>
         private static bool PartialIntersection(IEnumerable<HostRangesBase> hostRangeBases, int?[] includeRange)
         {
             foreach (HostRangesBase hrb in hostRangeBases.Where(i => i.ExInClusionFlag == ExInClusionFlag.Include))
             {
-                if (hrb.Ranges[0] <= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
+                if (hrb.Ranges[0] <= includeRange[0] && hrb.Ranges[1] >= includeRange[0] && hrb.Ranges[1] <= includeRange[1])
                 {
                     hrb.Ranges[1] = includeRange[1];
                     return true;
                 }
 
-                if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[1] >= includeRange[1])
+                if (hrb.Ranges[0] >= includeRange[0] && hrb.Ranges[0] <= includeRange[1] && hrb.Ranges[1] >= includeRange[1])
                 {
                     hrb.Ranges[0] = includeRange[0];
                     return true;
