@@ -183,13 +183,13 @@ namespace HostAggregation.RangeAllocationService
         /// <returns>Возвращается список новых диапазонов после деления</returns>
         private static List<HostRangesBase> AbsorptionInAggragation(List<HostRangesBase> hostRangesBases, HostRangesBase checkElement)
         {
-            // checkElement включает в себя один или несколько диапазонов листа HostRangesBase
+            // checkElement включает в себя один или несколько диапазонов листа HostRangesBase.
             List<HostRangesBase> checkElementMoreThanHostRanges = hostRangesBases
                 .Where(h => h.HostName == checkElement.HostName && 
                     h.Ranges[0] >= checkElement.Ranges[0] && h.Ranges[1] <= checkElement.Ranges[1])
                 .OrderBy(h => h.Ranges[0])
                 .ToList();
-            // Диапазон листа HostRangesBase включает в себя checkElement
+            // Диапазон листа HostRangesBase включает в себя checkElement.
             List<HostRangesBase> checkElementLessThanHostRanges = hostRangesBases
                 .Where(h => h.HostName == checkElement.HostName && 
                     h.Ranges[0] <= checkElement.Ranges[0] && h.Ranges[1] >= checkElement.Ranges[1])
@@ -202,17 +202,40 @@ namespace HostAggregation.RangeAllocationService
                 foreach (HostRangesBase hrb in checkElementMoreThanHostRanges)
                 {
                     int?[] ints = new int?[2];
-                    hostRangesBases.Remove(hrb);
+                    /*hostRangesBases.Remove(hrb);
                     if (hrb.Ranges[0] == checkElement.Ranges[0])
                     {
                         ints[0] = hrb.Ranges[0];
+                    }
+                    else if(hrb.Ranges[0] >= checkElement.Ranges[0] && newRangesList.Count() == 0)
+                    {
+                        ints[0] = checkElement.Ranges[0];
+                    }*/
+
+                    if(newRangesList.Count() == 0)
+                    {
+                        if (hrb.Ranges[0] == checkElement.Ranges[0])
+                        {
+                            ints[0] = hrb.Ranges[0];
+                        }
+                        else
+                            ints[0] = checkElement.Ranges[0];
                     }
                     else
                     {
 
                     }
-
-                    if()
+                    newRangesList.Add(ints);
+                }
+                foreach(var i in newRangesList)
+                {
+                    HostRangesBase hrb = new HostRangesBase()
+                    {
+                        HostName = checkElement.HostName,
+                        ExInClusionFlag = checkElement.ExInClusionFlag,
+                        Ranges = i
+                    };
+                    newElements.Add(hrb);
                 }
             }
 
