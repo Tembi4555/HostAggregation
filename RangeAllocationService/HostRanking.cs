@@ -196,61 +196,53 @@ namespace HostAggregation.RangeAllocationService
                 .OrderBy(h => h.Ranges[0])
                 .ToList();
             List<HostRangesBase> newElements = new();
-            List<int?[]> newRangesList = new List<int?[]>();
-            if(checkElementMoreThanHostRanges.Count() > 0) 
-            {
-                foreach (HostRangesBase hrb in checkElementMoreThanHostRanges)
-                {
-                    int?[] ints = new int?[2];
-                    /*hostRangesBases.Remove(hrb);
-                    if (hrb.Ranges[0] == checkElement.Ranges[0])
-                    {
-                        ints[0] = hrb.Ranges[0];
-                    }
-                    else if(hrb.Ranges[0] >= checkElement.Ranges[0] && newRangesList.Count() == 0)
-                    {
-                        ints[0] = checkElement.Ranges[0];
-                    }*/
+            //List<int?[]> newRangesList = new List<int?[]>();
+            //if(checkElementMoreThanHostRanges.Count() > 0) 
+            //{
+            //    foreach (HostRangesBase hrb in checkElementMoreThanHostRanges)
+            //    {
+            //        int?[] ints = new int?[2];
 
-                    if(newRangesList.Count() == 0)
-                    {
-                        if (hrb.Ranges[0] == checkElement.Ranges[0])
-                        {
-                            ints[0] = hrb.Ranges[0];
-                        }
-                        else
-                            ints[0] = checkElement.Ranges[0];
-                    }
-                    else
-                    {
+            //        hostRangesBases.Remove(hrb);
+            //        if (newRangesList.Count() == 0)
+            //        {
+            //            if (hrb.Ranges[0] == checkElement.Ranges[0])
+            //            {
+            //                ints[0] = hrb.Ranges[0];
+            //            }
+            //            else
+            //                ints[0] = checkElement.Ranges[0];
+            //        }
+            //        else
+            //        {
 
-                    }
-                    newRangesList.Add(ints);
-                }
-                foreach(var i in newRangesList)
-                {
-                    HostRangesBase hrb = new HostRangesBase()
-                    {
-                        HostName = checkElement.HostName,
-                        ExInClusionFlag = checkElement.ExInClusionFlag,
-                        Ranges = i
-                    };
-                    newElements.Add(hrb);
-                }
-            }
+            //        }
+            //        newRangesList.Add(ints);
+            //    }
+            //    foreach(var i in newRangesList)
+            //    {
+            //        HostRangesBase hrb = new HostRangesBase()
+            //        {
+            //            HostName = checkElement.HostName,
+            //            ExInClusionFlag = checkElement.ExInClusionFlag,
+            //            Ranges = i
+            //        };
+            //        newElements.Add(hrb);
+            //    }
+            //}
 
-            if (checkElementLessThanHostRanges.Count() > 0)
-            {
-                foreach (HostRangesBase hrb in checkElementLessThanHostRanges)
-                {
-                    int?[] ints = new int?[2];
-                    hostRangesBases.Remove(hrb);
-                    if (hrb.Ranges[0] == checkElement.Ranges[0])
-                    {
-                        ints[0] = hrb.Ranges[0];
-                    }
-                }
-            }
+            //if (checkElementLessThanHostRanges.Count() > 0)
+            //{
+            //    foreach (HostRangesBase hrb in checkElementLessThanHostRanges)
+            //    {
+            //        int?[] ints = new int?[2];
+            //        hostRangesBases.Remove(hrb);
+            //        if (hrb.Ranges[0] == checkElement.Ranges[0])
+            //        {
+            //            ints[0] = hrb.Ranges[0];
+            //        }
+            //    }
+            //}
 
             return newElements;
         }
