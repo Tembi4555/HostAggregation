@@ -14,7 +14,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"C:\example-generator\Output";
+            string directoryName = @"D:\projects\example-generator\Output";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
