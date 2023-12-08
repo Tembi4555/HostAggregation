@@ -14,7 +14,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"D:\projects\example-generator\Output";
+            string directoryName = @"C:\example-generator\Output";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -65,11 +65,7 @@ namespace HostAggregation
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
             sw.Stop();
 
-            var shorts = HostRanking.GetRankingHost(hostsFromFileList);
-            
-
-            //var file000 = res.Where(x => x.FileName == "file00000 — копия.txt").ToList();
-
+            var shorts = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
             Console.ReadKey();
         }

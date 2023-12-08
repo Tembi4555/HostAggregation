@@ -29,7 +29,6 @@ namespace HostAggregation.RangeAllocationService.Helpers
                 string str = readFile.DataInString;
                 List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
                 res.AddRange(hostRangeFull);
-
             }
 
             return res;
@@ -260,7 +259,6 @@ namespace HostAggregation.RangeAllocationService.Helpers
                     HostRangesFull hostRangeFullResult = new HostRangesFull()
                     {
                         HostName = host,
-
                         ExInClusionFlag = flag,
                         FileName = fileName,
                         NumberStringInFile = i
@@ -288,8 +286,11 @@ namespace HostAggregation.RangeAllocationService.Helpers
         private static string[] GetHostsNameFromStringArr(string[] strWithHosts)
         {
             string hostFull = strWithHosts.Where(s => s?.ToLower()?.Contains("hosts") == true).FirstOrDefault();
-            string[] hosts = HelpersService.Helpers.Parser.StringToArrayString(hostFull, new char[] { ',',')','(' });
-            return hosts.Where(s => s != "hosts:").ToArray();
+            string[] hosts = HelpersService.Helpers.Parser.StringToArrayString(hostFull, new char[] { ',',')','(' })
+                .Where(s => !s.StartsWith("hosts"))
+                .ToArray();
+
+            return hosts;
         }
     }
 }
