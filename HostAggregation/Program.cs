@@ -65,7 +65,8 @@ namespace HostAggregation
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
             sw.Stop();
 
-            var shorts = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
+            var shorts = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0])
+                .Where(h => h.ExInClusionFlag == ExInClusionFlag.Include).ToList();
 
             Console.ReadKey();
         }

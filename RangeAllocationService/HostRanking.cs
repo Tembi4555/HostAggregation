@@ -113,16 +113,16 @@ namespace HostAggregation.RangeAllocationService
         /// <returns></returns>
         private static bool IncludesItemChecking(List<HostRangesBase> hostRangeBases, HostRangesBase checkedElement) 
         {
-            HostRangesBase incledeElement = hostRangeBases
+            HostRangesBase includeElement = hostRangeBases
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] <= checkedElement.Ranges[0]
                     && h.Ranges[1] >= checkedElement.Ranges[1]).FirstOrDefault();
 
-            if (incledeElement != null)
+            if (includeElement != null)
             {
-                if (incledeElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                if (includeElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
-                    hostRangeBases.Remove(incledeElement);
-                    hostRangeBases.AddRange(PartitionSegmentIfInclusion(incledeElement, 
+                    hostRangeBases.Remove(includeElement);
+                    hostRangeBases.AddRange(PartitionSegmentIfInclusion(includeElement, 
                         new List<HostRangesBase> { checkedElement }));
                     // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
                 }
@@ -156,12 +156,12 @@ namespace HostAggregation.RangeAllocationService
                     newEl.HostName = segmentForPartition.HostName;
                     newEl.ExInClusionFlag = segmentForPartition.ExInClusionFlag;
                     newEl.Ranges[0] = startPosition;
-                    newEl.Ranges[1] = endPosition;
+                    newEl.Ranges[1] = endPosition - 1;
                     resultSegments.Add(newEl);
                 }
                 if (i+1 < orderedSepSgments.Count())
                 {
-                    startPosition = orderedSepSgments[i].Ranges[1];
+                    startPosition = orderedSepSgments[i].Ranges[1] + 1;
                     endPosition = orderedSepSgments[i + 1].Ranges[0];
                 }
                 
@@ -173,7 +173,7 @@ namespace HostAggregation.RangeAllocationService
                 HostRangesBase lastEl = new HostRangesBase();
                 lastEl.HostName = segmentForPartition.HostName;
                 lastEl.ExInClusionFlag = segmentForPartition.ExInClusionFlag;
-                lastEl.Ranges[0] = startPosition;
+                lastEl.Ranges[0] = startPosition + 1;
                 lastEl.Ranges[1] = endPosition;
                 resultSegments.Add(lastEl);
             }
@@ -198,12 +198,14 @@ namespace HostAggregation.RangeAllocationService
                 if(crossingInStart.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
                     HostRangesBase[] outherJoin = OutherJoin(crossingInStart, checkedElement);
-                    hostRangeBases.Add(outherJoin[0]);
+                    if (outherJoin[0].Ranges.Length != 0)
+                        hostRangeBases.Add(outherJoin[0]);
+                    
                     checkedElement = outherJoin[1];
                 }
                 else
                 {
-
+                    checkedElement = FullJoin(crossingInStart, checkedElement);
                 }
 
             }
@@ -211,26 +213,60 @@ namespace HostAggregation.RangeAllocationService
                 && checkedElement.Ranges[1] >= h.Ranges[0] && h.Ranges[1] >= checkedElement.Ranges[1])
                 .FirstOrDefault();
 
+            if (crossingInEnd != null)
+            {
+                hostRangeBases.Remove(crossingInEnd);
+                if (crossingInEnd.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                {
+                    HostRangesBase[] outherJoin = OutherJoin(checkedElement, crossingInEnd);
+                    if (outherJoin[1].Ranges.Length != 0)
+                        hostRangeBases.Add(outherJoin[1]);
+
+                    checkedElement = outherJoin[0];
+                }
+                else
+                {
+                    checkedElement = FullJoin(checkedElement, crossingInEnd);
+                }
+            }
+
             List<HostRangesBase> enteringElements = hostRangeBases
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] >= checkedElement.Ranges[0]
                     && h.Ranges[1] <= checkedElement.Ranges[1]).OrderBy(r => r.Ranges[0]).ToList();
 
             if (enteringElements.Count() > 0)
             {
-                foreach(HostRangesBase element in enteringElements)
+                foreach (HostRangesBase element in enteringElements)
                 {
-                    if(element.ExInClusionFlag != checkedElement.ExInClusionFlag)
-                    {
-
-                    }
+                    hostRangeBases.Remove(element);
+                }
+                if (checkedElement.ExInClusionFlag != enteringElements.FirstOrDefault()?.ExInClusionFlag)
+                {
+                    hostRangeBases.AddRange(PartitionSegmentIfInclusion(checkedElement, enteringElements));
+                }
+                else
+                {
+                    hostRangeBases.AddRange(enteringElements);
                 }
             }
-
 
             if (enteringElements.Count() == 0 && crossingInStart == null && crossingInEnd == null)
                 return false;
             else
                 return true;
+        }
+
+        /// <summary>
+        /// Полное объединение двух интервалов
+        /// </summary>
+        /// <param name="crossingInStart"></param>
+        /// <param name="checkedElement"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private static HostRangesBase FullJoin(HostRangesBase leftElement, HostRangesBase rightElement)
+        {
+            leftElement.Ranges[1] = rightElement.Ranges[1];
+            return leftElement;
         }
 
         /// <summary>
@@ -242,12 +278,20 @@ namespace HostAggregation.RangeAllocationService
         /// <exception cref="NotImplementedException"></exception>
         private static HostRangesBase[] OutherJoin(HostRangesBase leftElement, HostRangesBase rightElement)
         {
-
-            /*if (leftElement.Ranges[1] == rightElement.Ranges[0])
+            int? temp = rightElement.Ranges[0];
+            rightElement.Ranges[0] = leftElement.Ranges[1] + 1;
+            leftElement.Ranges[1] = temp - 1;
+            
+            if (leftElement.Ranges[0] == rightElement.Ranges[0])
             {
-
-            }*/
-            leftElement.Ranges[1] = 
+                leftElement.Ranges = new int?[] { };
+            }
+            if (leftElement.Ranges[1] == rightElement.Ranges[1])
+            {
+                rightElement.Ranges = new int?[] { };
+            }
+            
+            return new HostRangesBase[2] { leftElement, rightElement};
         }
 
         /// <summary>
