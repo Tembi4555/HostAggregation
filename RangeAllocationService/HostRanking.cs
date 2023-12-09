@@ -32,7 +32,9 @@ namespace HostAggregation.RangeAllocationService
                         bool haveIncledesItemChecking = IncludesItemChecking(resultList, hostRangeFull);
                         if(!haveIncledesItemChecking)
                         {
-                            resultList.Add(hostRangeFull);
+                            bool crossingOrEntering = CrossingOrEnteringIntoCheckingElement(resultList, hostRangeFull);
+                            if(!crossingOrEntering)
+                                resultList.Add(hostRangeFull);
                         }
                     }
                     
@@ -132,6 +134,12 @@ namespace HostAggregation.RangeAllocationService
             }
         }
 
+        /// <summary>
+        /// Разделение отрезка на сегменты вырезая диапазоны
+        /// </summary>
+        /// <param name="segmentForPartition"></param>
+        /// <param name="separatinSegments"></param>
+        /// <returns></returns>
         private static List<HostRangesBase> PartitionSegmentIfInclusion(HostRangesBase segmentForPartition, 
             List<HostRangesBase> separatinSegments)
         {
@@ -141,6 +149,7 @@ namespace HostAggregation.RangeAllocationService
             List<HostRangesBase> orderedSepSgments = separatinSegments.OrderBy(r => r.Ranges[0]).ToList();
             for(int i = 0; i < orderedSepSgments.Count(); i++)
             {
+                // Продумать включение диапазонов
                 if (startPosition != endPosition)
                 {
                     HostRangesBase newEl = new HostRangesBase();
@@ -170,6 +179,75 @@ namespace HostAggregation.RangeAllocationService
             }
 
             return resultSegments;
+        }
+
+        /// <summary>
+        /// Нахождение диапазонов, которые полностью входят в проверяемый элемент или пересекают его.
+        /// </summary>
+        /// <returns></returns>
+        private static bool CrossingOrEnteringIntoCheckingElement(List<HostRangesBase> hostRangeBases, 
+            HostRangesBase checkedElement)
+        {
+            HostRangesBase crossingInStart = hostRangeBases.Where(h => h.Ranges[0] < checkedElement.Ranges[0]
+                && checkedElement.Ranges[0] <= h.Ranges[1] && h.Ranges[1] <= checkedElement.Ranges[1])
+                .FirstOrDefault();
+
+            if (crossingInStart != null)
+            {
+                hostRangeBases.Remove(crossingInStart);
+                if(crossingInStart.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                {
+                    HostRangesBase[] outherJoin = OutherJoin(crossingInStart, checkedElement);
+                    hostRangeBases.Add(outherJoin[0]);
+                    checkedElement = outherJoin[1];
+                }
+                else
+                {
+
+                }
+
+            }
+            HostRangesBase crossingInEnd = hostRangeBases.Where(h => h.Ranges[0] > checkedElement.Ranges[0]
+                && checkedElement.Ranges[1] >= h.Ranges[0] && h.Ranges[1] >= checkedElement.Ranges[1])
+                .FirstOrDefault();
+
+            List<HostRangesBase> enteringElements = hostRangeBases
+                .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] >= checkedElement.Ranges[0]
+                    && h.Ranges[1] <= checkedElement.Ranges[1]).OrderBy(r => r.Ranges[0]).ToList();
+
+            if (enteringElements.Count() > 0)
+            {
+                foreach(HostRangesBase element in enteringElements)
+                {
+                    if(element.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    {
+
+                    }
+                }
+            }
+
+
+            if (enteringElements.Count() == 0 && crossingInStart == null && crossingInEnd == null)
+                return false;
+            else
+                return true;
+        }
+
+        /// <summary>
+        /// Разделение пересекающихся диапазонов.
+        /// </summary>
+        /// <param name="leftElement">Элемент стоящий слева в диапазоне пересечения</param>
+        /// <param name="rightElement">Элемент стоящий справа в диапазоне пересечения</param>
+        /// <returns>index[0] - левый элемент, index[1] - правый эдемент</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private static HostRangesBase[] OutherJoin(HostRangesBase leftElement, HostRangesBase rightElement)
+        {
+
+            /*if (leftElement.Ranges[1] == rightElement.Ranges[0])
+            {
+
+            }*/
+            leftElement.Ranges[1] = 
         }
 
         /// <summary>
