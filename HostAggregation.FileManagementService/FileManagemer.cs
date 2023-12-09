@@ -10,6 +10,20 @@ namespace HostAggregation.FileManagementService
     public class FileManagemer
     {
         /// <summary>
+        /// Получить путь к корневой директории для сохранения
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPathForSave() 
+        {
+            string pathForSave = Directory.GetCurrentDirectory() + "\\Reports";
+            if (!Directory.Exists(pathForSave))
+            {
+                Directory.CreateDirectory(pathForSave);
+            }
+            pathForSave = pathForSave + "\\hosts - report.txt";
+            return pathForSave;
+        }
+        /// <summary>
         /// Чтение всех файлов в указанном каталоге и его подкаталогах.
         /// </summary>
         /// <param name="root">Имя каталога</param>

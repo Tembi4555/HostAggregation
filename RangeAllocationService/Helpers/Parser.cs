@@ -65,6 +65,11 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return res;
         }
 
+        /// <summary>
+        /// Перевод модели HostRangesBase в строку для сохранения в файл.
+        /// </summary>
+        /// <param name="hostsRangeShort"></param>
+        /// <returns></returns>
         public static string StringFromHostRangeShort(List<HostRangesBase> hostsRangeShort)
         {
             var hostInGroup = hostsRangeShort.GroupBy(n => n.HostName);
@@ -124,63 +129,6 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return hostsRangeFull;
         }
 
-        /*private static List<HostRangeFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName)
-        {
-            List<HostRangeFull> hostsRangeFullList = new();
-            
-
-            for (int i = 0; i < arrayFromHostRange.Length; i++)
-            {
-                string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(arrayFromHostRange[i], ", ");
-
-                HostRangeFull hostRangeFull = new HostRangeFull();
-                hostRangeFull.FileName = fileName;
-                hostRangeFull.NumberStringInFile = i;
-
-                string[] hosts = GetHostsNameFromStringArr(splitStrinByComma);
-
-                foreach (string str in splitStrinByComma)
-                {
-                    if (str?.ToLower()?.Contains("type") == true)
-                    {
-                        if (str?.ToLower()?.Contains("include") == true)
-                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Include;
-
-                        if (str?.ToLower()?.Contains("exclude") == true)
-                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Exclude;
-                    }
-
-                    if (str?.ToLower()?.Contains("range") == true)
-                    {
-                        List<int> ints = HelpersService.Helpers.Parser.GetIntsFromString(str);
-                        int?[] range = new int?[2];
-                        if (ints.Count > 1)
-                        {
-                            range[0] = ints[0];
-                            range[1] = ints[1];
-                        }
-
-                        if (IsValidRange(range))
-                            hostRangeFull.Ranges.Add(range);
-                    }
-                }
-                foreach (string host in hosts)
-                {
-                    HostRangeFull hostRangeFullResult = new HostRangeFull()
-                    {
-                        HostName = host,
-                        Ranges = hostRangeFull.Ranges,
-                        ExInClusionFlag = hostRangeFull.ExInClusionFlag,
-                        FileName = hostRangeFull.FileName,
-                        NumberStringInFile = hostRangeFull.NumberStringInFile
-                    };
-                    hostsRangeFullList.Add(hostRangeFullResult);
-                }
-            }
-            
-            return hostsRangeFullList;
-        }*/
-
         private static List<HostRangesFull> GetHostRangeFullFromStringArray(string dataStr, string fileName)
         {
             string[] arrayFromHostRange = dataStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
@@ -188,51 +136,6 @@ namespace HostAggregation.RangeAllocationService.Helpers
             
             for (int i = 0; i < arrayFromHostRange.Length; i++)
             {
-                /*HostRangeFull hostRangeFull = new HostRangeFull();
-                hostRangeFull.FileName = fileName;
-                hostRangeFull.NumberStringInFile = i;
-
-                string[] splitStrinByComma = HelpersService.Helpers.Parser.StringToArrayString(arrayFromHostRange[i], ", ");
-                
-                string[] hosts = GetHostsNameFromStringArr(splitStrinByComma);
-
-                foreach (string str in splitStrinByComma)
-                {
-                    if (str?.ToLower()?.Contains("type") == true)
-                    {
-                        if (str?.ToLower()?.Contains("include") == true)
-                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Include;
-
-                        if (str?.ToLower()?.Contains("exclude") == true)
-                            hostRangeFull.ExInClusionFlag = ExInClusionFlag.Exclude;
-                    }
-
-                    if (str?.ToLower()?.Contains("range") == true)
-                    {
-                        List<int> ints = HelpersService.Helpers.Parser.GetIntsFromString(str);
-                        int?[] range = new int?[2];
-                        if (ints.Count > 1)
-                        {
-                            range[0] = ints[0];
-                            range[1] = ints[1];
-                        }
-
-                        if (IsValidRange(range))
-                            hostRangeFull.Ranges.Add(range);
-                    }
-                }
-                foreach (string host in hosts)
-                {
-                    HostRangeFull hostRangeFullResult = new HostRangeFull()
-                    {
-                        HostName = host,
-                        Ranges = hostRangeFull.Ranges,
-                        ExInClusionFlag = hostRangeFull.ExInClusionFlag,
-                        FileName = hostRangeFull.FileName,
-                        NumberStringInFile = hostRangeFull.NumberStringInFile
-                    };
-                    hostsRangeFull.Add(hostRangeFullResult);
-                }*/
                 ExInClusionFlag flag = ExInClusionFlag.Undefined;
                 
                 List<int> ints = new List<int>();

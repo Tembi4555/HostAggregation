@@ -63,10 +63,23 @@ namespace HostAggregation
             IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
 
             Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
-            sw.Stop();
 
-            var shorts = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0])
+            //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
+
+            var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0])
                 .Where(h => h.ExInClusionFlag == ExInClusionFlag.Include).ToList();
+
+            string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
+
+            string pathForSave = FileManagementService.FileManagemer.GetPathForSave();
+
+            string messagePath = FileManagementService.FileManagemer.SaveFile(pathForSave, stringForSave);
+
+            Console.WriteLine($"Программа выполнена.\nРезультирующий файл отчета можете просмотреть в " 
+                + messagePath );
+
+            Console.WriteLine($"Время работы программы {sw.ElapsedMilliseconds}");
+            sw.Stop();
 
             Console.ReadKey();
         }
