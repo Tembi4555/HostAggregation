@@ -18,37 +18,28 @@ namespace HostAggregation.RangeAllocationService
                 .GroupBy(f => f.FileName)
                 .OrderBy(k => k.Key);
 
-            List<HostRangesBase> includeHostRangeBases = new List<HostRangesBase>();
-            List<HostRangesBase> excludeHostRangeBases = new List<HostRangesBase>();
-
-            foreach (IGrouping<string, HostRangesFull> groupByFileName in validAndGroupHost)
+            List<HostRangesBase> resultList = new List<HostRangesBase>();
+            foreach(IGrouping<string, HostRangesFull> groupByFileName in validAndGroupHost)
             {
                 foreach (HostRangesFull hostRangeFull in groupByFileName)
                 {
-                    if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Exclude)
+                    if(resultList.Count() == 0)
+                        resultList.Add(hostRangeFull);
+
+                    bool haveEqualElement = EqualRanges(resultList, hostRangeFull);
+                    if(!haveEqualElement)
                     {
-                        if(excludeHostRangeBases.Count() == 0)
-                            excludeHostRangeBases.Add(hostRangeFull);
-                        RangeAbsorption(excludeHostRangeBases, hostRangeFull);
-                        AggregationInclusionExclusion(includeHostRangeBases, excludeHostRangeBases, excludeHostRangeBases
-                            .Last());
+                        bool haveIncledesItemChecking = IncludesItemChecking(resultList, hostRangeFull);
+                        if(!haveIncledesItemChecking)
+                        {
+                            resultList.Add(hostRangeFull);
+                        }
                     }
-                    else if(hostRangeFull.ExInClusionFlag == ExInClusionFlag.Include)
-                    {
-                        if (includeHostRangeBases.Count() == 0)
-                            includeHostRangeBases.Add(hostRangeFull);
-                        RangeAbsorption(includeHostRangeBases, hostRangeFull);
-                        AggregationInclusionExclusion(includeHostRangeBases, excludeHostRangeBases, includeHostRangeBases
-                            .Last());
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    
                 }
             }
 
-            return includeHostRangeBases;
+            return resultList;
         }
 
         /// <summary>
@@ -85,6 +76,147 @@ namespace HostAggregation.RangeAllocationService
             {
                 hostRangeBases.Add(includeRange);
             }
+        }
+
+        /// <summary>
+        /// Находит в списке элемент полностью равный проверяемому элементу
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        private static bool EqualRanges(List<HostRangesBase> hostRangeBases, HostRangesBase checkedElement)
+        {
+            HostRangesBase equalElement = hostRangeBases
+                .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] == checkedElement.Ranges[0]
+                    && h.Ranges[1] == checkedElement.Ranges[1]).FirstOrDefault();
+
+            if(equalElement != null)
+            {
+                if(equalElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                {
+                    hostRangeBases.Remove(equalElement);
+                    // Добавить в журнал, что элемент из строки файла name строки i был удален полностью равным элементом.
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Находит элемент в списке с диапазоном, полностю включающем диапазон проверяемого элемента
+        /// </summary>
+        /// <returns></returns>
+        private static bool IncludesItemChecking(List<HostRangesBase> hostRangeBases, HostRangesBase checkedElement) 
+        {
+            HostRangesBase incledeElement = hostRangeBases
+                .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] <= checkedElement.Ranges[0]
+                    && h.Ranges[1] >= checkedElement.Ranges[1]).FirstOrDefault();
+
+            if (incledeElement != null)
+            {
+                if (incledeElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
+                {
+                    hostRangeBases.Remove(incledeElement);
+                    hostRangeBases.AddRange(PartitionSegmentIfInclusion(incledeElement, 
+                        new List<HostRangesBase> { checkedElement }));
+                    // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static List<HostRangesBase> PartitionSegmentIfInclusion(HostRangesBase segmentForPartition, 
+            List<HostRangesBase> separatinSegments)
+        {
+            List<HostRangesBase> resultSegments = new List<HostRangesBase>();
+            int? startPosition = segmentForPartition.Ranges[0];
+            int? endPosition = separatinSegments.FirstOrDefault()?.Ranges[0];
+            List<HostRangesBase> orderedSepSgments = separatinSegments.OrderBy(r => r.Ranges[0]).ToList();
+            for(int i = 0; i < orderedSepSgments.Count(); i++)
+            {
+                if (startPosition != endPosition)
+                {
+                    HostRangesBase newEl = new HostRangesBase();
+                    newEl.HostName = segmentForPartition.HostName;
+                    newEl.ExInClusionFlag = segmentForPartition.ExInClusionFlag;
+                    newEl.Ranges[0] = startPosition;
+                    newEl.Ranges[1] = endPosition;
+                    resultSegments.Add(newEl);
+                }
+                if (i+1 < orderedSepSgments.Count())
+                {
+                    startPosition = orderedSepSgments[i].Ranges[1];
+                    endPosition = orderedSepSgments[i + 1].Ranges[0];
+                }
+                
+            }
+            startPosition = separatinSegments.LastOrDefault()?.Ranges[1];
+            endPosition = segmentForPartition.Ranges[1];
+            if (startPosition != endPosition)
+            {
+                HostRangesBase lastEl = new HostRangesBase();
+                lastEl.HostName = segmentForPartition.HostName;
+                lastEl.ExInClusionFlag = segmentForPartition.ExInClusionFlag;
+                lastEl.Ranges[0] = startPosition;
+                lastEl.Ranges[1] = endPosition;
+                resultSegments.Add(lastEl);
+            }
+
+            return resultSegments;
+        }
+
+        /// <summary>
+        /// Полное вхождение одного интервала в другой
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        private static void Absorption(List<HostRangesBase> hostRangeBases, HostRangesBase includeRange)
+        {
+            IEnumerable<HostRangesBase> hrbList = hostRangeBases
+                .Where(h => h.HostName == includeRange.HostName && h.Ranges[0] >= includeRange.Ranges[0]
+                    && h.Ranges[1] <= includeRange.Ranges[1]);
+
+            if(hrbList.Count() > 0)
+            {
+
+            }
+            else
+            {
+                PartialIntersection(hostRangeBases, includeRange);
+            }
+            //bool addIncludeRange = false;
+            /*bool noAdd = false;
+            foreach (var hostRange in sortedList)
+            {
+                // Полное включение includeRange в границы hostRangeBases[i].Ranges
+                if (hostRange.Ranges[0] <= includeRange.Ranges[0]
+                    && hostRange.Ranges[1] >= includeRange.Ranges[1])
+                {
+                    noAdd = true;
+                    break;
+                }
+                // Полное включение hostRangeBases[i].Ranges в границы includeRange
+                else if (hostRange.Ranges[0] >= includeRange.Ranges[0]
+                    && hostRange.Ranges[1] <= includeRange.Ranges[1])
+                {
+                    hostRangeBases.Remove(hostRange);
+                }
+                else
+                    PartialIntersection(hostRangeBases, includeRange);
+
+            }
+            if (!noAdd)
+            {
+                hostRangeBases.Add(includeRange);
+            }*/
         }
 
         /// <summary>
@@ -196,53 +328,7 @@ namespace HostAggregation.RangeAllocationService
                 .OrderBy(h => h.Ranges[0])
                 .ToList();
             List<HostRangesBase> newElements = new();
-            //List<int?[]> newRangesList = new List<int?[]>();
-            //if(checkElementMoreThanHostRanges.Count() > 0) 
-            //{
-            //    foreach (HostRangesBase hrb in checkElementMoreThanHostRanges)
-            //    {
-            //        int?[] ints = new int?[2];
-
-            //        hostRangesBases.Remove(hrb);
-            //        if (newRangesList.Count() == 0)
-            //        {
-            //            if (hrb.Ranges[0] == checkElement.Ranges[0])
-            //            {
-            //                ints[0] = hrb.Ranges[0];
-            //            }
-            //            else
-            //                ints[0] = checkElement.Ranges[0];
-            //        }
-            //        else
-            //        {
-
-            //        }
-            //        newRangesList.Add(ints);
-            //    }
-            //    foreach(var i in newRangesList)
-            //    {
-            //        HostRangesBase hrb = new HostRangesBase()
-            //        {
-            //            HostName = checkElement.HostName,
-            //            ExInClusionFlag = checkElement.ExInClusionFlag,
-            //            Ranges = i
-            //        };
-            //        newElements.Add(hrb);
-            //    }
-            //}
-
-            //if (checkElementLessThanHostRanges.Count() > 0)
-            //{
-            //    foreach (HostRangesBase hrb in checkElementLessThanHostRanges)
-            //    {
-            //        int?[] ints = new int?[2];
-            //        hostRangesBases.Remove(hrb);
-            //        if (hrb.Ranges[0] == checkElement.Ranges[0])
-            //        {
-            //            ints[0] = hrb.Ranges[0];
-            //        }
-            //    }
-            //}
+            
 
             return newElements;
         }
