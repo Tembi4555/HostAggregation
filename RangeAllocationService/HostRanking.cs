@@ -53,20 +53,20 @@ namespace HostAggregation.RangeAllocationService
                 /*foreach (HostRangesFull hostRangeFull in groupByFileName)
                 {*/
 
-                    if (resultList.Count() == 0)
-                        resultList.Add(hostRangeFull);
+                if (resultList.Count() == 0)
+                    resultList.Add(hostRangeFull);
 
-                    bool haveEqualElement = EqualRanges(/*resultList,*/ hostRangeFull);
-                    if (!haveEqualElement)
+                bool haveEqualElement = EqualRanges(/*resultList,*/ hostRangeFull);
+                if (!haveEqualElement)
+                {
+                    bool haveIncledesItemChecking = IncludesItemChecking(/*resultList,*/ hostRangeFull);
+                    if (!haveIncledesItemChecking)
                     {
-                        bool haveIncledesItemChecking = IncludesItemChecking(/*resultList,*/ hostRangeFull);
-                        if (!haveIncledesItemChecking)
-                        {
-                            bool crossingOrEntering = CrossingOrEnteringIntoCheckingElement(/*resultList,*/ hostRangeFull);
-                            if (!crossingOrEntering)
-                                resultList.Add(hostRangeFull);
-                        }
+                        bool crossingOrEntering = CrossingOrEnteringIntoCheckingElement(/*resultList,*/ hostRangeFull);
+                        if (!crossingOrEntering)
+                            resultList.Add(hostRangeFull);
                     }
+                }
 
                 //}
             }
