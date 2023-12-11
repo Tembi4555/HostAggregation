@@ -14,7 +14,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"D:\projects\example-generator\Output";
+            string directoryName = @"C:\example-generator\Output";
             Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -62,7 +62,7 @@ namespace HostAggregation
             //IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
             IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
 
-            Console.WriteLine($"Работа по переводу считанных фалов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
+            Console.WriteLine($"Работа по переводу считанных файлов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
 
             //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
@@ -71,9 +71,9 @@ namespace HostAggregation
 
             string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
 
-            string pathForSave = FileManagementService.FileManagemer.GetPathForSave();
+            string pathForSave = FileManagemer.GetPathForSave();
 
-            string messagePath = FileManagementService.FileManagemer.SaveFile(pathForSave, stringForSave);
+            string messagePath = FileManagemer.SaveFile(pathForSave, stringForSave);
 
             Console.WriteLine($"Программа выполнена.\nРезультирующий файл отчета можете просмотреть в " 
                 + messagePath );

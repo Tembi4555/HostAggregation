@@ -54,6 +54,11 @@ namespace HostAggregation.RangeAllocationService
             {
                 count++;
 
+                if (count == 11)
+                {
+                    var a = count;
+                }
+
                 bool haveEqualElement = EqualRanges(/*resultList,*/ hostRangeFull);
                 if (!haveEqualElement)
                 {
@@ -65,6 +70,7 @@ namespace HostAggregation.RangeAllocationService
                             resultList.Add(hostRangeFull);
                     }
                 }
+                
             }
 
             return resultList;
@@ -214,7 +220,8 @@ namespace HostAggregation.RangeAllocationService
         private static bool CrossingOrEnteringIntoCheckingElement(/*List<HostRangesBase> hostRangeBases, */
             HostRangesBase checkedElement)
         {
-            HostRangesBase crossingInStart = resultList.Where(h => h.Ranges[0] < checkedElement.Ranges[0]
+            HostRangesBase crossingInStart = resultList.Where(h => h.HostName == checkedElement.HostName && 
+                h.Ranges[0] < checkedElement.Ranges[0]
                 && checkedElement.Ranges[0] <= h.Ranges[1] && h.Ranges[1] <= checkedElement.Ranges[1])
                 .FirstOrDefault();
 
@@ -235,7 +242,8 @@ namespace HostAggregation.RangeAllocationService
                 }
 
             }
-            HostRangesBase crossingInEnd = resultList.Where(h => h.Ranges[0] > checkedElement.Ranges[0]
+            HostRangesBase crossingInEnd = resultList.Where(h => h.HostName == checkedElement.HostName 
+                && h.Ranges[0] > checkedElement.Ranges[0]
                 && checkedElement.Ranges[1] >= h.Ranges[0] && h.Ranges[1] >= checkedElement.Ranges[1])
                 .FirstOrDefault();
 
@@ -275,6 +283,10 @@ namespace HostAggregation.RangeAllocationService
                 {
                     resultList.Add(checkedElement);
                 }
+            }
+            else
+            {
+                resultList.Add(checkedElement);
             }
 
             if (enteringElements.Count() == 0 && crossingInStart == null && crossingInEnd == null)
