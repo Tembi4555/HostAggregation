@@ -13,35 +13,6 @@ namespace HostAggregation.RangeAllocationService
         private static List<HostRangesBase> resultList = new List<HostRangesBase>();
         public static List<HostRangesBase> GetRankingHost(IEnumerable<HostRangesFull> hostsFromFileList)
         {
-            /*IOrderedEnumerable<IGrouping<string, HostRangesFull>> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
-                .OrderBy(h => h.HostName)
-                .ThenBy(s => s.NumberStringInFile)
-                .GroupBy(f => f.FileName)
-                .OrderBy(k => k.Key);
-
-            List<HostRangesBase> resultList = new List<HostRangesBase>();
-            foreach(IGrouping<string, HostRangesFull> groupByFileName in validAndGroupHost)
-            {
-                foreach (HostRangesFull hostRangeFull in groupByFileName)
-                {
-                    
-                    if(resultList.Count() == 0)
-                        resultList.Add(hostRangeFull);
-
-                    bool haveEqualElement = EqualRanges(resultList, hostRangeFull);
-                    if(!haveEqualElement)
-                    {
-                        bool haveIncledesItemChecking = IncludesItemChecking(resultList, hostRangeFull);
-                        if(!haveIncledesItemChecking)
-                        {
-                            bool crossingOrEntering = CrossingOrEnteringIntoCheckingElement(resultList, hostRangeFull);
-                            if(!crossingOrEntering)
-                                resultList.Add(hostRangeFull);
-                        }
-                    }
-                    
-                }
-            }*/
             List<HostRangesFull> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
                 .OrderBy(h => h.FileName)
                 .ThenBy(s => s.NumberStringInFile)
@@ -49,7 +20,7 @@ namespace HostAggregation.RangeAllocationService
             int count = 0;
             resultList.Add(validAndGroupHost.FirstOrDefault());
             validAndGroupHost.RemoveAt(0);
-            //List<HostRangesBase> resultList = new List<HostRangesBase>();
+
             foreach (HostRangesFull hostRangeFull in validAndGroupHost)
             {
                 count++;
@@ -59,18 +30,15 @@ namespace HostAggregation.RangeAllocationService
                     var a = count;
                 }
 
-                bool haveEqualElement = EqualRanges(/*resultList,*/ hostRangeFull);
+                bool haveEqualElement = EqualRanges(hostRangeFull);
                 if (!haveEqualElement)
                 {
-                    bool haveIncledesItemChecking = IncludesItemChecking(/*resultList,*/ hostRangeFull);
+                    bool haveIncledesItemChecking = IncludesItemChecking(hostRangeFull);
                     if (!haveIncledesItemChecking)
                     {
-                        bool crossingOrEntering = CrossingOrEnteringIntoCheckingElement(/*resultList,*/ hostRangeFull);
-                        if (!crossingOrEntering)
-                            resultList.Add(hostRangeFull);
+                        CrossingOrEnteringIntoCheckingElement(hostRangeFull);
                     }
                 }
-                
             }
 
             return resultList;
@@ -118,7 +86,7 @@ namespace HostAggregation.RangeAllocationService
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        private static bool EqualRanges(/*List<HostRangesBase> hostRangeBases,*/ HostRangesBase checkedElement)
+        private static bool EqualRanges(HostRangesBase checkedElement)
         {
             HostRangesBase equalElement = resultList
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] == checkedElement.Ranges[0]
@@ -143,7 +111,7 @@ namespace HostAggregation.RangeAllocationService
         /// Находит элемент в списке с диапазоном, полностю включающем диапазон проверяемого элемента
         /// </summary>
         /// <returns></returns>
-        private static bool IncludesItemChecking(/*List<HostRangesBase> hostRangeBases,*/ HostRangesBase checkedElement) 
+        private static bool IncludesItemChecking(HostRangesBase checkedElement) 
         {
             HostRangesBase includeElement = resultList
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] <= checkedElement.Ranges[0]
@@ -217,8 +185,7 @@ namespace HostAggregation.RangeAllocationService
         /// Нахождение диапазонов, которые полностью входят в проверяемый элемент или пересекают его.
         /// </summary>
         /// <returns></returns>
-        private static bool CrossingOrEnteringIntoCheckingElement(/*List<HostRangesBase> hostRangeBases, */
-            HostRangesBase checkedElement)
+        private static void CrossingOrEnteringIntoCheckingElement(HostRangesBase checkedElement)
         {
             HostRangesBase crossingInStart = resultList.Where(h => h.HostName == checkedElement.HostName && 
                 h.Ranges[0] < checkedElement.Ranges[0]
@@ -288,11 +255,6 @@ namespace HostAggregation.RangeAllocationService
             {
                 resultList.Add(checkedElement);
             }
-
-            if (enteringElements.Count() == 0 && crossingInStart == null && crossingInEnd == null)
-                return false;
-            else
-                return true;
         }
 
         /// <summary>
