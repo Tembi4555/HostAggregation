@@ -42,19 +42,17 @@ namespace HostAggregation.RangeAllocationService
                     
                 }
             }*/
-            IOrderedEnumerable<HostRangesFull> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
+            List<HostRangesFull> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
                 .OrderBy(h => h.FileName)
-                .ThenBy(s => s.NumberStringInFile);
+                .ThenBy(s => s.NumberStringInFile)
+                .ToList();
             int count = 0;
+            resultList.Add(validAndGroupHost.FirstOrDefault());
+            validAndGroupHost.RemoveAt(0);
             //List<HostRangesBase> resultList = new List<HostRangesBase>();
             foreach (HostRangesFull hostRangeFull in validAndGroupHost)
             {
                 count++;
-                /*foreach (HostRangesFull hostRangeFull in groupByFileName)
-                {*/
-
-                if (resultList.Count() == 0)
-                    resultList.Add(hostRangeFull);
 
                 bool haveEqualElement = EqualRanges(/*resultList,*/ hostRangeFull);
                 if (!haveEqualElement)
@@ -67,8 +65,6 @@ namespace HostAggregation.RangeAllocationService
                             resultList.Add(hostRangeFull);
                     }
                 }
-
-                //}
             }
 
             return resultList;
