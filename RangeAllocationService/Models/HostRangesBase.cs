@@ -10,7 +10,7 @@ namespace HostAggregation.RangeAllocationService.Models
     /// <summary>
     /// Базовый класс для наименования владельца и списка всех его диапазонов
     /// </summary>
-    public class HostRangesBase : IComparable
+    public class HostRangesBase //: IComparable
     {
         public string HostName { get; set; }
         //public List<Range> Ranges { get; set; } = new List<Range>();
@@ -18,7 +18,7 @@ namespace HostAggregation.RangeAllocationService.Models
 
         public ExInClusionFlag ExInClusionFlag { get; set; }
 
-        public int CompareTo(object? obj)
+        /*public int CompareTo(object? obj)
         {
             if ((obj == null) || (!(obj is HostRangesBase)) || Ranges[0] == null || Ranges[1] == null)
                 return 0;
@@ -28,7 +28,7 @@ namespace HostAggregation.RangeAllocationService.Models
                 return 1;
             else
                 return 0;
-        }
+        }*/
     }
 
     public enum ExInClusionFlag
