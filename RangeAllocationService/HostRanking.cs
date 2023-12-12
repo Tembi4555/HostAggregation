@@ -11,6 +11,21 @@ namespace HostAggregation.RangeAllocationService
     public class HostRanking
     {
         private static List<HostRangesBase> resultList = new List<HostRangesBase>();
+
+        /*private static List<HostRangesBase> SortedList 
+        {
+            get
+            {
+                resultList.Sort(delegate (HostRangesBase s, HostRangesBase e) 
+                {
+                    if (s.Ranges[0] == null && e.Ranges[0] == null) return 0;
+                    else if (s.Ranges[0] == null) return -1;
+                    else if (e.Ranges[0] == null) return 1;
+                    else return s.HostName.CompareTo(e.Ranges[0]);
+                });
+                return 
+            }
+        }*/
         public static List<HostRangesBase> GetRankingHost(IEnumerable<HostRangesFull> hostsFromFileList)
         {
             List<HostRangesFull> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
@@ -25,7 +40,7 @@ namespace HostAggregation.RangeAllocationService
             {
                 count++;
                 
-                resultList.OrderBy(r => r.Ranges[0]);
+                //resultList.OrderBy(r => r.Ranges[0]);
 
                 JoinOrSeparated(hostRangeFull);
                 /*bool haveEqualElement = EqualRanges(hostRangeFull);
@@ -82,7 +97,7 @@ namespace HostAggregation.RangeAllocationService
         {
             List<HostRangesBase> listForRemove = new List<HostRangesBase>();
             List<HostRangesBase> listForAdd = new List<HostRangesBase>();
-            for (int i = 0; i < resultList.Count(); i++)
+            for (int i = 0; i < resultList.Sort().Count(); i++)
             {
                 if (resultList[i].HostName == checkedElement.HostName 
                     && resultList[i].Ranges[0] == checkedElement.Ranges[0]
