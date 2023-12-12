@@ -165,14 +165,14 @@ namespace HostAggregation.RangeAllocationService
                     
                     if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
-                        /*resultList.AddRange(PartitionSegmentIfInclusion(checkedElement, 
-                            new List<HostRangesBase> { resultList[i] }));*/
-                        listForAdd.AddRange(PartitionSegmentIfInclusion(checkedElement,
-                            new List<HostRangesBase> { resultList[i] }));
+                        List<HostRangesBase> partitionList = PartitionSegmentIfInclusion(checkedElement,
+                            new List<HostRangesBase> { resultList[i] });
+                        checkedElement = partitionList?.LastOrDefault();
+                        partitionList.Remove(checkedElement);
+                        listForAdd.AddRange(partitionList);
                     }
                     else
                     {
-                        //resultList.Add(checkedElement);
                         listForAdd.Add(checkedElement);
                     }
                 }

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace HostAggregation.RangeAllocationService.Helpers
             foreach (ReadFile readFile in readFiles)
             {
                 string str = readFile.DataInString;
-                List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
+                //List<HostRangesFull> hostRangeFull = GetHostRangeFullFromStringArray(str, readFile.ShortName);
+                List<HostRangesFull> hostRangeFull = ConvertStringArrayInHostRangeFull(str, readFile.ShortName);
                 res.AddRange(hostRangeFull);
             }
 
@@ -178,6 +180,46 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return hostsRangeFull;
         }
 
+        private static List<HostRangesFull> ConvertStringArrayInHostRangeFull(string dataStr, string fileName)
+        {
+            string[] arrayFromHostRange = dataStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            List<HostRangesFull> hostsRangeFull = new();
+
+            for (int i = 0; i < arrayFromHostRange.Length; i++)
+            {
+                ExInClusionFlag flag = ExInClusionFlag.Undefined;
+
+                List<int> ints = GetIntervalFromString(arrayFromHostRange[i]);
+
+                string[] hosts = GetHostsNameFromString(arrayFromHostRange[i]);
+
+                if (arrayFromHostRange[i].Contains("include"))
+                    flag = ExInClusionFlag.Include;
+
+                if (arrayFromHostRange[i].Contains("exclude"))
+                    flag = ExInClusionFlag.Exclude;
+
+                foreach (string host in hosts)
+                {
+                    HostRangesFull hostRangeFullResult = new HostRangesFull()
+                    {
+                        HostName = host,
+                        ExInClusionFlag = flag,
+                        FileName = fileName,
+                        NumberStringInFile = i
+                    };
+                    if (ints.Count == 2)
+                    {
+                        hostRangeFullResult.Ranges[0] = ints[0];
+                        hostRangeFullResult.Ranges[1] = ints[1];
+                    }
+                    hostsRangeFull.Add(hostRangeFullResult);
+                }
+            }
+
+            return hostsRangeFull;
+        }
+
         private static bool IsValidRange(int?[] range)
         {
             if (range[1] < range[0] || range[0] == null || range[1] == null)
@@ -194,6 +236,30 @@ namespace HostAggregation.RangeAllocationService.Helpers
                 .ToArray();
 
             return hosts;
+        }
+
+        private static string[] GetHostsNameFromString(string str)
+        {
+            string[] hosts = new string[] { };
+            string strWithHosts = HelpersService.Helpers.Parser.TrimStartEndStringBySymbol(str, '(', ')');
+            if (!String.IsNullOrEmpty(strWithHosts))
+            {
+                hosts = strWithHosts.Split(new char[] { ',' });
+            }
+
+            return hosts;
+        }
+
+        private static List<int> GetIntervalFromString(string str)
+        {
+            List<int> ints = new();
+            string strWithHosts = HelpersService.Helpers.Parser.TrimStartEndStringBySymbol(str, '[', ']');
+            if (!String.IsNullOrEmpty(strWithHosts))
+            {
+                ints = HelpersService.Helpers.Parser.GetIntsFromString(strWithHosts);
+            }
+
+            return ints;
         }
     }
 }

@@ -31,5 +31,18 @@ namespace HostAggregation.HelpersService.Helpers
                        .ToList();
             return ints;
         }
+
+        public static string TrimStartEndStringBySymbol(string str, char start, char end)
+        {
+            string result = String.Empty;
+            int startSubstr = str.IndexOf(start) + 1;
+            int endSubstr = str.IndexOf(end);
+            if (startSubstr != -1 && endSubstr != -1)
+            {
+                result = str.Substring(startSubstr, endSubstr - startSubstr);
+            }
+
+            return result;
+        }
     }
 }
