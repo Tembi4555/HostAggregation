@@ -12,20 +12,6 @@ namespace HostAggregation.RangeAllocationService
     {
         private static List<HostRangesBase> resultList = new List<HostRangesBase>();
 
-        /*private static List<HostRangesBase> SortedList 
-        {
-            get
-            {
-                resultList.Sort(delegate (HostRangesBase s, HostRangesBase e) 
-                {
-                    if (s.Ranges[0] == null && e.Ranges[0] == null) return 0;
-                    else if (s.Ranges[0] == null) return -1;
-                    else if (e.Ranges[0] == null) return 1;
-                    else return s.HostName.CompareTo(e.Ranges[0]);
-                });
-                return 
-            }
-        }*/
         public static List<HostRangesBase> GetRankingHost(IEnumerable<HostRangesFull> hostsFromFileList)
         {
             List<HostRangesFull> validAndGroupHost = hostsFromFileList.Where(v => v.IsValid)
@@ -132,14 +118,12 @@ namespace HostAggregation.RangeAllocationService
                     && checkedElement.Ranges[0] <= resultList[i].Ranges[1] 
                     && resultList[i].Ranges[1] <= checkedElement.Ranges[1])
                 {
-                    //resultList.Remove(resultList[i]);
                     listForRemove.Add(resultList[i]);
                     if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
                         HostRangesBase[] outherJoin = OutherJoin(resultList[i], checkedElement);
                         if (outherJoin[0].Ranges.Length != 0)
                             listForAdd.Add(outherJoin[0]);
-                            //resultList.Add(outherJoin[0]);
 
                         checkedElement = outherJoin[1];
                     }
@@ -155,14 +139,12 @@ namespace HostAggregation.RangeAllocationService
                     && checkedElement.Ranges[1] >= resultList[i].Ranges[0] 
                     && resultList[i].Ranges[1] >= checkedElement.Ranges[1])
                 {
-                    //resultList.Remove(resultList[i]);
                     listForRemove.Add(resultList[i]);
                     if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
                         HostRangesBase[] outherJoin = OutherJoin(checkedElement, resultList[i]);
                         if (outherJoin[1].Ranges.Length != 0)
                             listForAdd.Add(outherJoin[1]);
-                            //resultList.Add(outherJoin[1]);
 
                         checkedElement = outherJoin[0];
                     }
@@ -176,7 +158,6 @@ namespace HostAggregation.RangeAllocationService
                     && resultList[i].Ranges[0] >= checkedElement.Ranges[0]
                     && resultList[i].Ranges[1] <= checkedElement.Ranges[1])
                 {
-                    //resultList.Remove(resultList[i]);
                     listForRemove.Add(resultList[i]);
                     
                     if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
@@ -192,11 +173,6 @@ namespace HostAggregation.RangeAllocationService
                         listForAdd.Add(checkedElement);
                     }
                 }
-                /*else
-                {
-                    //resultList.Add(checkedElement);
-                    listForAdd.Add(checkedElement);
-                }*/
             }
             foreach(HostRangesBase r in listForRemove)
             {
@@ -237,7 +213,7 @@ namespace HostAggregation.RangeAllocationService
         }
 
         /// <summary>
-        /// Находит элемент в списке с диапазоном, полностю включающем диапазон проверяемого элемента
+        /// Находит элемент в списке с диапазоном, полностью включающем диапазон проверяемого элемента
         /// </summary>
         /// <returns></returns>
         private static bool IncludesItemChecking(HostRangesBase checkedElement) 
@@ -328,6 +304,7 @@ namespace HostAggregation.RangeAllocationService
                     orderResultList.RemoveRange(i, 2);
 
                     orderResultList.Insert(i, joinEl);
+                    i--;
                 }
                 
             }
