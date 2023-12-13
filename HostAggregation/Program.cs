@@ -66,7 +66,7 @@ namespace HostAggregation
 
             //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
-            var aggregationData = HostRanking.GetRankingHost(hostsFromFileList);
+            List<HostRangesBase> aggregationData = HostRanking.GetRankingHost(hostsFromFileList);
                 
 
             string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
@@ -77,6 +77,22 @@ namespace HostAggregation
 
             Console.WriteLine($"Программа выполнена.\nРезультирующий файл отчета можете просмотреть в " 
                 + messagePath );
+
+            List<HostRangesFull> inValidHosts = hostsFromFileList.Where(h => !h.IsValid).ToList();
+
+            if(inValidHosts.Count() > 0)
+            {
+                StringBuilder strB = RangeAllocationService.Helpers.Parser.GetStringBuilderFromInvalidHostRange(inValidHosts);
+
+                LogService.Log.AddError(strB);
+                string messagePathForError = LogService.Log.CreateErrorJournal();
+                Console.WriteLine($"Список строк не прошедших валидацию можете просмотреть в "
+                + messagePathForError);
+            }
+            
+            string messagePathInfoLog = LogService.Log.CreateInfoJournal();
+            Console.WriteLine($"Журнал операций можете просмотреть в "
+                + messagePathInfoLog);
 
             Console.WriteLine($"Время работы программы {sw.ElapsedMilliseconds}");
             sw.Stop();

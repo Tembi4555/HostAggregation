@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj" />
     <ProjectReference Include="..\HostAggregation.HelpersService\HostAggregation.HelpersService.csproj" />
+    <ProjectReference Include="..\HostAggregation.LogService\HostAggregation.LogService.csproj" />
     <ProjectReference Include="..\RangeAllocationService\HostAggregation.RangeAllocationService.csproj" />
   </ItemGroup>
 
@@ -17,12 +18,6 @@
     <Compile Update="Program.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="hostAggr.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
