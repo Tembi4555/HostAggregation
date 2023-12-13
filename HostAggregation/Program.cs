@@ -14,7 +14,7 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"C:\example-generator\Output";
+            string directoryName = @"D:\projects\example-generator\Output";
             //Console.WriteLine("Введите директорию для работы с файлами");
             //string directoryName = Console.ReadLine();
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
@@ -66,10 +66,8 @@ namespace HostAggregation
 
             //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
-            var aggregationData = HostRanking.GetRankingHost(hostsFromFileList)
-                .OrderBy(s => s.HostName)
-                .ThenBy(s => s.Ranges[0])
-                .Where(h => h.ExInClusionFlag == ExInClusionFlag.Include).ToList();
+            var aggregationData = HostRanking.GetRankingHost(hostsFromFileList);
+                
 
             string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
 

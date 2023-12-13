@@ -34,16 +34,17 @@ namespace HostAggregation.RangeAllocationService
                 .ToList();
             int count = 0;
             resultList.Add(validAndGroupHost.FirstOrDefault());
-            validAndGroupHost.RemoveAt(0);
+            if(validAndGroupHost.Count() > 0)
+                validAndGroupHost.RemoveAt(0);
 
             foreach (HostRangesFull hostRangeFull in validAndGroupHost)
             {
                 count++;
-                
+
                 //resultList.OrderBy(r => r.Ranges[0]);
 
-                JoinOrSeparated(hostRangeFull);
-                /*bool haveEqualElement = EqualRanges(hostRangeFull);
+                //JoinOrSeparated(hostRangeFull);
+                bool haveEqualElement = EqualRanges(hostRangeFull);
                 if (!haveEqualElement)
                 {
                     bool haveIncledesItemChecking = IncludesItemChecking(hostRangeFull);
@@ -51,9 +52,9 @@ namespace HostAggregation.RangeAllocationService
                     {
                         CrossingOrEnteringIntoCheckingElement(hostRangeFull);
                     }
-                }*/
+                }
             }
-
+            resultList = JoinNeighboringElement();
             return resultList;
         }
 
@@ -97,7 +98,7 @@ namespace HostAggregation.RangeAllocationService
         {
             List<HostRangesBase> listForRemove = new List<HostRangesBase>();
             List<HostRangesBase> listForAdd = new List<HostRangesBase>();
-            for (int i = 0; i < resultList.Sort().Count(); i++)
+            for (int i = 0; i < resultList.Count(); i++)
             {
                 if (resultList[i].HostName == checkedElement.HostName 
                     && resultList[i].Ranges[0] == checkedElement.Ranges[0]
@@ -307,6 +308,30 @@ namespace HostAggregation.RangeAllocationService
             }
 
             return resultSegments;
+        }
+
+        /// <summary>
+        /// Объединение диапазонов типа 10,15 и 15,20
+        /// </summary>
+        private static List<HostRangesBase> JoinNeighboringElement()
+        {
+            List<HostRangesBase> orderResultList = resultList
+                .OrderBy(s => s.HostName)
+                .ThenBy(s => s.Ranges[0])
+                .Where(h => h.ExInClusionFlag == ExInClusionFlag.Include).ToList();
+
+            for(int i = 0; i < orderResultList.Count() - 1; i++)
+            {
+                if (orderResultList[i].Ranges[1] + 1 == orderResultList[i + 1].Ranges[0])
+                {
+                    HostRangesBase joinEl = FullJoin(orderResultList[i], orderResultList[i + 1]);
+                    orderResultList.RemoveRange(i, 2);
+
+                    orderResultList.Insert(i, joinEl);
+                }
+                
+            }
+            return orderResultList;
         }
 
         /// <summary>
