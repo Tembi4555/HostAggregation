@@ -65,9 +65,10 @@ namespace HostAggregation
 
             //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
+            //LogService.Log.OffLogRecord();
+
             List<HostRangesBase> aggregationData = HostRanking.GetRankingHost(readFiles);
                 
-
             string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
 
             string pathForSave = FileManagemer.GetPathForSave();
