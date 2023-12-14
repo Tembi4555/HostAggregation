@@ -214,14 +214,14 @@ namespace HostAggregation.RangeAllocationService
                 {
                     _resultList.Remove(equalElement);
                     // Добавить в журнал, что элемент из строки файла name строки i был удален полностью равным элементом.
-                    LogService.Log.AddInfo($"Диапазон {equalElement.Ranges[0]},{equalElement.Ranges[1]};" +
-                        $"был удален диапазоном {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                    LogService.Log.AddInfo($"{equalElement.HostName}; Отрезок {equalElement.Ranges[0]},{equalElement.Ranges[1]} " +
+                        $"был удален отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
                 }
                 else
                 {
-                    LogService.Log.AddInfo($"Диапазон {equalElement.Ranges[0]},{equalElement.Ranges[1]};" +
-                        $"был пропущен, так как равен диапазону {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                    LogService.Log.AddInfo($"{equalElement.HostName}; Отрезок {equalElement.Ranges[0]},{equalElement.Ranges[1]} " +
+                        $"был пропущен, так как равен отрезку {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
                 }
                 return true;
@@ -253,15 +253,15 @@ namespace HostAggregation.RangeAllocationService
                     string ranges = String.Join(",",partition.SelectMany(h => h.Ranges).ToList());
 
                     // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
-                    LogService.Log.AddInfo($"Диапазон {includeElement.Ranges[0]},{includeElement.Ranges[1]};" +
-                        $"Разделен диапазоном {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; отрезок {includeElement.Ranges[0]},{includeElement.Ranges[1]} " +
+                        $"разделен отрезком {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}" +
-                        $"на диапазоны {ranges}");
+                        $"на отрезки {ranges}");
                 }
                 else
                 {
-                    LogService.Log.AddInfo($"Диапазон {includeElement.Ranges[0]},{includeElement.Ranges[1]};" +
-                        $"Включает диапазон {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Отрезок {includeElement.Ranges[0]},{includeElement.Ranges[1]};" +
+                        $"Включает отрезки {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
                 }
                 return true;
@@ -364,7 +364,7 @@ namespace HostAggregation.RangeAllocationService
                         _resultList.Add(outherJoin[0]);
                     
                     checkedElement = outherJoin[1];
-                    LogService.Log.AddInfo($"Пересечение диапазона {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
                         $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"Разделены на два отрезка {outherJoin[0].Ranges[0]},{outherJoin[0].Ranges[1]}" +
                         $" и {outherJoin[1].Ranges[0]},{outherJoin[1].Ranges[1]}");
@@ -372,9 +372,9 @@ namespace HostAggregation.RangeAllocationService
                 else
                 {
                     checkedElement = FullJoin(crossingInStart, checkedElement);
-                    LogService.Log.AddInfo($"Пересечение диапазона {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
                         $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
-                        $"Слияние в общий диапазон {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
+                        $"Слияние в общий отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
                 }
 
             }
@@ -393,7 +393,7 @@ namespace HostAggregation.RangeAllocationService
                         _resultList.Add(outherJoin[1]);
 
                     checkedElement = outherJoin[0];
-                    LogService.Log.AddInfo($"Пересечение диапазона {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
                         $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
                         $"Разделены на два отрезка {outherJoin[0].Ranges[0]},{outherJoin[0].Ranges[1]}" +
                         $" и {outherJoin[1].Ranges[0]},{outherJoin[1].Ranges[1]}");
@@ -401,9 +401,9 @@ namespace HostAggregation.RangeAllocationService
                 else
                 {
                     checkedElement = FullJoin(checkedElement, crossingInEnd);
-                    LogService.Log.AddInfo($"Пересечение диапазона {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
                         $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
-                        $"Слияние в общий диапазон {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
+                        $"Слияние в общий отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
 
                 }
             }
@@ -431,9 +431,9 @@ namespace HostAggregation.RangeAllocationService
                     string ranges = String.Join(",", partition.SelectMany(h => h.Ranges).ToList());
 
                     // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
-                    LogService.Log.AddInfo($"Диапазон {checkedElement.Ranges[0]},{checkedElement.Ranges[1]};" +
-                        $"Разделен диапазонами {segmentsString} " +
-                        $"на диапазоны {ranges}");
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]};" +
+                        $"Разделен отрезками {segmentsString} " +
+                        $"на отрезки {ranges}");
                 }
                 else
                 {

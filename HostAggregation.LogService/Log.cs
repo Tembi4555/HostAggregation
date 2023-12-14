@@ -25,9 +25,6 @@ namespace HostAggregation.LogService
             if(_countAddedInfoString == 1000000)
             {
                 Parallel.Invoke(() => CreateInfoJournal());
-                
-                _infoJournal.Clear();
-                _countAddedInfoString = 0;
             }
         }
 
@@ -35,6 +32,7 @@ namespace HostAggregation.LogService
         {
             string path = FileManagementService.FileManagemer.GetPathForSave("LogJournals", "Error.txt");
             string result = FileManagementService.FileManagemer.SaveFile(path, _errorJournal.ToString());
+            _errorJournal.Clear();
             return result;
         }
 
@@ -43,6 +41,8 @@ namespace HostAggregation.LogService
             string path = FileManagementService.FileManagemer.GetPathForSave("LogJournals", 
                 $"Info-{DateTime.Now.Millisecond}.txt");
             string result = FileManagementService.FileManagemer.SaveFile(path, _infoJournal.ToString());
+            _infoJournal.Clear();
+            _countAddedInfoString = 0;
             return result;
         }
     }
