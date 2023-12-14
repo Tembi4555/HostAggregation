@@ -14,9 +14,13 @@ namespace HostAggregation
     {
         static void Main(string[] args)
         {
-            string directoryName = @"D:\projects\example-generator\Output";
-            //Console.WriteLine("Введите директорию для работы с файлами");
-            //string directoryName = Console.ReadLine();
+            //string directoryName = @"D:\projects\example-generator\Output";
+            Console.WriteLine("Введите директорию для работы с файлами");
+            string directoryName = Console.ReadLine();
+            if(String.IsNullOrEmpty(directoryName))
+            {
+                directoryName = @"C:\example-generator\Output";
+            }
             directoryName = directoryName?.Replace('"', ' ')?.Trim();
             List<ReadFile> readFiles = new List<ReadFile>();
             try
@@ -60,13 +64,13 @@ namespace HostAggregation
             sw.Start();
             
             //IEnumerable<HostRangeFull> res = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFileWithParallel(readFiles);
-            IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
+            //IEnumerable<HostRangesFull> hostsFromFileList = RangeAllocationService.Helpers.Parser.GetListHostRangeFullFromReadFile(readFiles);
 
             Console.WriteLine($"Работа по переводу считанных файлов в HostRangeFull выполнена за {sw.ElapsedMilliseconds}");
 
             //var aggregationData = HostRanking.GetRankingHost(hostsFromFileList).OrderBy(s => s.Ranges[0]).ToList();
 
-            List<HostRangesBase> aggregationData = HostRanking.GetRankingHost(hostsFromFileList);
+            List<HostRangesBase> aggregationData = HostRanking.GetRankingHost(readFiles);
                 
 
             string stringForSave = RangeAllocationService.Helpers.Parser.StringFromHostRangeShort(aggregationData);
@@ -78,7 +82,7 @@ namespace HostAggregation
             Console.WriteLine($"Программа выполнена.\nРезультирующий файл отчета можете просмотреть в " 
                 + messagePath );
 
-            List<HostRangesFull> inValidHosts = hostsFromFileList.Where(h => !h.IsValid).ToList();
+            /*List<HostRangesFull> inValidHosts = hostsFromFileList.Where(h => !h.IsValid).ToList();
 
             if(inValidHosts.Count() > 0)
             {
@@ -88,8 +92,10 @@ namespace HostAggregation
                 string messagePathForError = LogService.Log.CreateErrorJournal();
                 Console.WriteLine($"Список строк не прошедших валидацию можете просмотреть в "
                 + messagePathForError);
-            }
-            
+            }*/
+            string messagePathForError = LogService.Log.CreateErrorJournal();
+            Console.WriteLine($"Список строк не прошедших валидацию можете просмотреть в "
+            + messagePathForError);
             string messagePathInfoLog = LogService.Log.CreateInfoJournal();
             Console.WriteLine($"Журнал операций можете просмотреть в "
                 + messagePathInfoLog);

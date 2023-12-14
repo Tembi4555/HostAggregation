@@ -1,8 +1,10 @@
-﻿using HostAggregation.RangeAllocationService.Models;
+﻿using FileManagementService.Models;
+using HostAggregation.RangeAllocationService.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +40,65 @@ namespace HostAggregation.RangeAllocationService
                     if (!haveIncledesItemChecking)
                     {
                         CrossingOrEnteringIntoCheckingElement(hostRangeFull);
+                    }
+                }
+            }
+            _resultList = JoinNeighboringElement();
+            return _resultList;
+        }
+
+        public static List<HostRangesBase> GetRankingHost(IEnumerable<ReadFile> readFiles)
+        {
+            foreach (ReadFile readFile in readFiles)
+            {
+                string str = readFile.DataInString;
+
+                string[] arrayFromHostRange = str.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < arrayFromHostRange.Length; i++)
+                {
+                    ExInClusionFlag flag = ExInClusionFlag.Undefined;
+
+                    List<int> ints = Helpers.Parser.GetIntervalFromString(arrayFromHostRange[i]);
+
+                    string[] hosts = Helpers.Parser.GetHostsNameFromString(arrayFromHostRange[i]);
+
+                    if (arrayFromHostRange[i].Contains("include"))
+                        flag = ExInClusionFlag.Include;
+
+                    if (arrayFromHostRange[i].Contains("exclude"))
+                        flag = ExInClusionFlag.Exclude;
+
+                    foreach (string host in hosts)
+                    {
+                        HostRangesFull hostRangeFullResult = new HostRangesFull()
+                        {
+                            HostName = host,
+                            ExInClusionFlag = flag,
+                            FileName = readFile.ShortName,
+                            NumberStringInFile = i
+                        };
+                        if (ints.Count == 2)
+                        {
+                            hostRangeFullResult.Ranges[0] = ints[0];
+                            hostRangeFullResult.Ranges[1] = ints[1];
+                        }
+                        if(hostRangeFullResult.IsValid)
+                        {
+                            bool haveEqualElement = EqualRanges(hostRangeFullResult);
+                            if (!haveEqualElement)
+                            {
+                                bool haveIncledesItemChecking = IncludesItemChecking(hostRangeFullResult);
+                                if (!haveIncledesItemChecking)
+                                {
+                                    CrossingOrEnteringIntoCheckingElement(hostRangeFullResult);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            LogService.Log.AddError($"{readFile.ShortName};{i};{hostRangeFullResult.InValidMessage}");
+                        }
                     }
                 }
             }

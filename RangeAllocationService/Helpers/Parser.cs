@@ -253,7 +253,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return hosts;
         }
 
-        private static string[] GetHostsNameFromString(string str)
+        public static string[] GetHostsNameFromString(string str)
         {
             string[] hosts = new string[] { };
             string strWithHosts = HelpersService.Helpers.Parser.TrimStartEndStringBySymbol(str, '(', ')');
@@ -265,7 +265,7 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return hosts;
         }
 
-        private static List<int> GetIntervalFromString(string str)
+        public static List<int> GetIntervalFromString(string str)
         {
             List<int> ints = new();
             string strWithHosts = HelpersService.Helpers.Parser.TrimStartEndStringBySymbol(str, '[', ']');
