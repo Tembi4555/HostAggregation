@@ -9,6 +9,11 @@ namespace HostAggregation.LogService
         private static int _countAddedInfoString = 0;
         private static bool fixLog = true;
 
+        public static void OffLogRecord()
+        {
+            fixLog = false;
+        }
+
         public static void AddError(string error)
         {
             if(fixLog)
