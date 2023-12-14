@@ -32,8 +32,6 @@ namespace HostAggregation
                     {
                         FileInfo file = new FileInfo(f);
                         byte[] data = File.ReadAllBytes(f);
-                        //string data = File.ReadAllText(f);
-                        //string[] data = File.ReadAllLines(f);
 
                         ReadFile readFile = new ReadFile()
                         {
@@ -57,8 +55,6 @@ namespace HostAggregation
             {
                 Console.WriteLine(ex.Message);
             }
-
-            //var readF = readFiles.Where(s=> s.ShortName == "file00000 — копия.txt");
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
