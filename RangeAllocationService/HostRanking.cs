@@ -49,7 +49,8 @@ namespace HostAggregation.RangeAllocationService
 
         public static List<HostRangesBase> GetRankingHost(IEnumerable<ReadFile> readFiles)
         {
-            foreach (ReadFile readFile in readFiles)
+            IOrderedEnumerable<ReadFile> filesOrderedByName = readFiles.OrderBy(o => o.FullName);
+            foreach (ReadFile readFile in filesOrderedByName)
             {
                 string str = readFile.DataInString;
 
