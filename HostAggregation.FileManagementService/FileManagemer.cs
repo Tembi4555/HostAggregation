@@ -13,14 +13,28 @@ namespace HostAggregation.FileManagementService
         /// Получить путь к корневой директории для сохранения
         /// </summary>
         /// <returns></returns>
-        public static string GetPathForSave() 
+        public static string GetPathForSave(string newDirectory = null, string fileName = null) 
         {
-            string pathForSave = Directory.GetCurrentDirectory() + "\\Reports";
+            if(String.IsNullOrEmpty(newDirectory))
+            {
+                newDirectory = "Reports";
+            }
+            if(String.IsNullOrEmpty(fileName))
+            {
+                fileName = "hosts-report.txt";
+            }
+            string pathForSave = Directory.GetCurrentDirectory() + $"\\{newDirectory}";
             if (!Directory.Exists(pathForSave))
             {
                 Directory.CreateDirectory(pathForSave);
             }
-            pathForSave = pathForSave + "\\hosts - report.txt";
+            pathForSave = pathForSave + $"\\{fileName}";
+
+            if(File.Exists(pathForSave))
+            {
+                File.Delete(pathForSave);
+            }
+
             return pathForSave;
         }
         /// <summary>

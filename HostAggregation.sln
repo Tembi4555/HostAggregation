@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation.FileManagem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation.RangeAllocationService", "RangeAllocationService\HostAggregation.RangeAllocationService.csproj", "{56B84530-EF54-4CAB-ACCC-287F520002D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAggregation.HelpersService", "HostAggregation.HelpersService\HostAggregation.HelpersService.csproj", "{19432636-14FD-41E7-9BDF-33389631960F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostAggregation.HelpersService", "HostAggregation.HelpersService\HostAggregation.HelpersService.csproj", "{19432636-14FD-41E7-9BDF-33389631960F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAggregation.LogService", "HostAggregation.LogService\HostAggregation.LogService.csproj", "{0262142D-98D1-4582-AD65-88E501BA1C00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{19432636-14FD-41E7-9BDF-33389631960F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19432636-14FD-41E7-9BDF-33389631960F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19432636-14FD-41E7-9BDF-33389631960F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0262142D-98D1-4582-AD65-88E501BA1C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0262142D-98D1-4582-AD65-88E501BA1C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0262142D-98D1-4582-AD65-88E501BA1C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0262142D-98D1-4582-AD65-88E501BA1C00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

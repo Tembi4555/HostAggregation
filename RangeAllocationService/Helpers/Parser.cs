@@ -88,6 +88,21 @@ namespace HostAggregation.RangeAllocationService.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Получить строку с ошибками для невалидных хостов
+        /// </summary>
+        /// <param name="hostRanges"></param>
+        /// <returns></returns>
+        public static StringBuilder GetStringBuilderFromInvalidHostRange(List<HostRangesFull> hostRanges)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (HostRangesFull hrf in hostRanges)
+            {
+                stringBuilder.Append($"{hrf.FileName};{hrf.NumberStringInFile};{hrf.InValidMessage}\r\n");
+            }
+            return stringBuilder;
+        }
+
         private static List<HostRangesFull> GetHostRangeFullFromStringArray(string[] arrayFromHostRange, string fileName, int stringNumber)
         {
             List<HostRangesFull> hostsRangeFull = new();

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HostAggregation.FileManagementService\HostAggregation.FileManagementService.csproj" />
-    <ProjectReference Include="..\HostAggregation.HelpersService\HostAggregation.HelpersService.csproj" />
-    <ProjectReference Include="..\HostAggregation.LogService\HostAggregation.LogService.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using HostAggregation.RangeAllocationService.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace HostAggregation.RangeAllocationService
 {
     public class HostRanking
     {
-        private static List<HostRangesBase> resultList = new List<HostRangesBase>();
+        private static List<HostRangesBase> _resultList = new List<HostRangesBase>();
 
         public static List<HostRangesBase> GetRankingHost(IEnumerable<HostRangesFull> hostsFromFileList)
         {
@@ -19,7 +20,7 @@ namespace HostAggregation.RangeAllocationService
                 .ThenBy(s => s.NumberStringInFile)
                 .ToList();
             int count = 0;
-            resultList.Add(validAndGroupHost.FirstOrDefault());
+            _resultList.Add(validAndGroupHost.FirstOrDefault());
             if(validAndGroupHost.Count() > 0)
                 validAndGroupHost.RemoveAt(0);
 
@@ -40,8 +41,8 @@ namespace HostAggregation.RangeAllocationService
                     }
                 }
             }
-            resultList = JoinNeighboringElement();
-            return resultList;
+            _resultList = JoinNeighboringElement();
+            return _resultList;
         }
 
         /// <summary>
@@ -84,86 +85,91 @@ namespace HostAggregation.RangeAllocationService
         {
             List<HostRangesBase> listForRemove = new List<HostRangesBase>();
             List<HostRangesBase> listForAdd = new List<HostRangesBase>();
-            for (int i = 0; i < resultList.Count(); i++)
+            for (int i = 0; i < _resultList.Count(); i++)
             {
-                if (resultList[i].HostName == checkedElement.HostName 
-                    && resultList[i].Ranges[0] == checkedElement.Ranges[0]
-                    && resultList[i].Ranges[1] == checkedElement.Ranges[1])
+                if (_resultList[i].HostName == checkedElement.HostName 
+                    && _resultList[i].Ranges[0] == checkedElement.Ranges[0]
+                    && _resultList[i].Ranges[1] == checkedElement.Ranges[1])
                 {
-                    if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    if (_resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
-                        resultList.Remove(resultList[i]);
+                        _resultList.Remove(_resultList[i]);
                         // Добавить в журнал, что элемент из строки файла name строки i был удален полностью равным элементом.
                     }
                     break;
                 }
 
 
-                if (resultList[i].HostName == checkedElement.HostName 
-                    && resultList[i].Ranges[0] <= checkedElement.Ranges[0]
-                    && resultList[i].Ranges[1] >= checkedElement.Ranges[1])
+                if (_resultList[i].HostName == checkedElement.HostName 
+                    && _resultList[i].Ranges[0] <= checkedElement.Ranges[0]
+                    && _resultList[i].Ranges[1] >= checkedElement.Ranges[1])
                 {
-                    if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    if (_resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
-                        resultList.Remove(resultList[i]);
-                        resultList.AddRange(PartitionSegmentIfInclusion(resultList[i], 
+                        _resultList.Remove(_resultList[i]);
+                        _resultList.AddRange(PartitionSegmentIfInclusion(_resultList[i], 
                             new List<HostRangesBase> { checkedElement }));
                         // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
                     }
                     break;
                 }
 
-                if (resultList[i].HostName == checkedElement.HostName 
-                    && resultList[i].Ranges[0] < checkedElement.Ranges[0]
-                    && checkedElement.Ranges[0] <= resultList[i].Ranges[1] 
-                    && resultList[i].Ranges[1] <= checkedElement.Ranges[1])
+                if (_resultList[i].HostName == checkedElement.HostName 
+                    && _resultList[i].Ranges[0] < checkedElement.Ranges[0]
+                    && checkedElement.Ranges[0] <= _resultList[i].Ranges[1] 
+                    && _resultList[i].Ranges[1] <= checkedElement.Ranges[1])
                 {
-                    listForRemove.Add(resultList[i]);
-                    if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    //resultList.Remove(resultList[i]);
+                    listForRemove.Add(_resultList[i]);
+                    if (_resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
-                        HostRangesBase[] outherJoin = OutherJoin(resultList[i], checkedElement);
+                        HostRangesBase[] outherJoin = OutherJoin(_resultList[i], checkedElement);
                         if (outherJoin[0].Ranges.Length != 0)
                             listForAdd.Add(outherJoin[0]);
+                            //resultList.Add(outherJoin[0]);
 
                         checkedElement = outherJoin[1];
                     }
                     else
                     {
-                        checkedElement = FullJoin(resultList[i], checkedElement);
+                        checkedElement = FullJoin(_resultList[i], checkedElement);
                     }
 
                 }
 
-                if (resultList[i].HostName == checkedElement.HostName
-                    && resultList[i].Ranges[0] > checkedElement.Ranges[0]
-                    && checkedElement.Ranges[1] >= resultList[i].Ranges[0] 
-                    && resultList[i].Ranges[1] >= checkedElement.Ranges[1])
+                if (_resultList[i].HostName == checkedElement.HostName
+                    && _resultList[i].Ranges[0] > checkedElement.Ranges[0]
+                    && checkedElement.Ranges[1] >= _resultList[i].Ranges[0] 
+                    && _resultList[i].Ranges[1] >= checkedElement.Ranges[1])
                 {
-                    listForRemove.Add(resultList[i]);
-                    if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    //resultList.Remove(resultList[i]);
+                    listForRemove.Add(_resultList[i]);
+                    if (_resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
-                        HostRangesBase[] outherJoin = OutherJoin(checkedElement, resultList[i]);
+                        HostRangesBase[] outherJoin = OutherJoin(checkedElement, _resultList[i]);
                         if (outherJoin[1].Ranges.Length != 0)
                             listForAdd.Add(outherJoin[1]);
+                            //resultList.Add(outherJoin[1]);
 
                         checkedElement = outherJoin[0];
                     }
                     else
                     {
-                        checkedElement = FullJoin(checkedElement, resultList[i]);
+                        checkedElement = FullJoin(checkedElement, _resultList[i]);
                     }
                 }
 
-                if (resultList[i].HostName == checkedElement.HostName 
-                    && resultList[i].Ranges[0] >= checkedElement.Ranges[0]
-                    && resultList[i].Ranges[1] <= checkedElement.Ranges[1])
+                if (_resultList[i].HostName == checkedElement.HostName 
+                    && _resultList[i].Ranges[0] >= checkedElement.Ranges[0]
+                    && _resultList[i].Ranges[1] <= checkedElement.Ranges[1])
                 {
-                    listForRemove.Add(resultList[i]);
+                    //resultList.Remove(resultList[i]);
+                    listForRemove.Add(_resultList[i]);
                     
-                    if (resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
+                    if (_resultList[i].ExInClusionFlag != checkedElement.ExInClusionFlag)
                     {
                         List<HostRangesBase> partitionList = PartitionSegmentIfInclusion(checkedElement,
-                            new List<HostRangesBase> { resultList[i] });
+                            new List<HostRangesBase> { _resultList[i] });
                         checkedElement = partitionList?.LastOrDefault();
                         partitionList.Remove(checkedElement);
                         listForAdd.AddRange(partitionList);
@@ -173,16 +179,21 @@ namespace HostAggregation.RangeAllocationService
                         listForAdd.Add(checkedElement);
                     }
                 }
+                /*else
+                {
+                    //resultList.Add(checkedElement);
+                    listForAdd.Add(checkedElement);
+                }*/
             }
             foreach(HostRangesBase r in listForRemove)
             {
-                resultList.Remove(r);
+                _resultList.Remove(r);
             }
 
             if (listForAdd.Count() == 0)
                 listForAdd.Add(checkedElement);
 
-            resultList.AddRange(listForAdd);
+            _resultList.AddRange(listForAdd);
         }
 
         /// <summary>
@@ -191,9 +202,9 @@ namespace HostAggregation.RangeAllocationService
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        private static bool EqualRanges(HostRangesBase checkedElement)
+        private static bool EqualRanges(HostRangesFull checkedElement)
         {
-            HostRangesBase equalElement = resultList
+            HostRangesBase equalElement = _resultList
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] == checkedElement.Ranges[0]
                     && h.Ranges[1] == checkedElement.Ranges[1]).FirstOrDefault();
 
@@ -201,8 +212,17 @@ namespace HostAggregation.RangeAllocationService
             {
                 if(equalElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
-                    resultList.Remove(equalElement);
+                    _resultList.Remove(equalElement);
                     // Добавить в журнал, что элемент из строки файла name строки i был удален полностью равным элементом.
+                    LogService.Log.AddInfo($"{equalElement.HostName}; Отрезок {equalElement.Ranges[0]},{equalElement.Ranges[1]} " +
+                        $"был удален отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
+                }
+                else
+                {
+                    LogService.Log.AddInfo($"{equalElement.HostName}; Отрезок {equalElement.Ranges[0]},{equalElement.Ranges[1]} " +
+                        $"был пропущен, так как равен отрезку {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
                 }
                 return true;
             }
@@ -213,12 +233,12 @@ namespace HostAggregation.RangeAllocationService
         }
 
         /// <summary>
-        /// Находит элемент в списке с диапазоном, полностью включающем диапазон проверяемого элемента
+        /// Находит элемент в списке с диапазоном, полностю включающем диапазон проверяемого элемента
         /// </summary>
         /// <returns></returns>
-        private static bool IncludesItemChecking(HostRangesBase checkedElement) 
+        private static bool IncludesItemChecking(HostRangesFull checkedElement) 
         {
-            HostRangesBase includeElement = resultList
+            HostRangesBase includeElement = _resultList
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] <= checkedElement.Ranges[0]
                     && h.Ranges[1] >= checkedElement.Ranges[1]).FirstOrDefault();
 
@@ -226,10 +246,23 @@ namespace HostAggregation.RangeAllocationService
             {
                 if (includeElement.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
-                    resultList.Remove(includeElement);
-                    resultList.AddRange(PartitionSegmentIfInclusion(includeElement, 
-                        new List<HostRangesBase> { checkedElement }));
+                    _resultList.Remove(includeElement);
+                    List<HostRangesBase> partition = PartitionSegmentIfInclusion(includeElement, 
+                        new List<HostRangesBase> { checkedElement });
+                    _resultList.AddRange(partition);
+                    string ranges = String.Join(",",partition.SelectMany(h => h.Ranges).ToList());
+
                     // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; отрезок {includeElement.Ranges[0]},{includeElement.Ranges[1]} " +
+                        $"разделен отрезком {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}" +
+                        $"на отрезки {ranges}");
+                }
+                else
+                {
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Отрезок {includeElement.Ranges[0]},{includeElement.Ranges[1]};" +
+                        $"Включает отрезки {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"из файла {checkedElement.FileName}, строка {checkedElement.NumberStringInFile}");
                 }
                 return true;
             }
@@ -291,7 +324,7 @@ namespace HostAggregation.RangeAllocationService
         /// </summary>
         private static List<HostRangesBase> JoinNeighboringElement()
         {
-            List<HostRangesBase> orderResultList = resultList
+            List<HostRangesBase> orderResultList = _resultList
                 .OrderBy(s => s.HostName)
                 .ThenBy(s => s.Ranges[0])
                 .Where(h => h.ExInClusionFlag == ExInClusionFlag.Include).ToList();
@@ -304,7 +337,6 @@ namespace HostAggregation.RangeAllocationService
                     orderResultList.RemoveRange(i, 2);
 
                     orderResultList.Insert(i, joinEl);
-                    i--;
                 }
                 
             }
@@ -317,51 +349,66 @@ namespace HostAggregation.RangeAllocationService
         /// <returns></returns>
         private static void CrossingOrEnteringIntoCheckingElement(HostRangesBase checkedElement)
         {
-            HostRangesBase crossingInStart = resultList.Where(h => h.HostName == checkedElement.HostName && 
+            HostRangesBase crossingInStart = _resultList.Where(h => h.HostName == checkedElement.HostName && 
                 h.Ranges[0] < checkedElement.Ranges[0]
                 && checkedElement.Ranges[0] <= h.Ranges[1] && h.Ranges[1] <= checkedElement.Ranges[1])
                 .FirstOrDefault();
 
             if (crossingInStart != null)
             {
-                resultList.Remove(crossingInStart);
+                _resultList.Remove(crossingInStart);
                 if(crossingInStart.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
                     HostRangesBase[] outherJoin = OutherJoin(crossingInStart, checkedElement);
                     if (outherJoin[0].Ranges.Length != 0)
-                        resultList.Add(outherJoin[0]);
+                        _resultList.Add(outherJoin[0]);
                     
                     checkedElement = outherJoin[1];
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
+                        $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"Разделены на два отрезка {outherJoin[0].Ranges[0]},{outherJoin[0].Ranges[1]}" +
+                        $" и {outherJoin[1].Ranges[0]},{outherJoin[1].Ranges[1]}");
                 }
                 else
                 {
                     checkedElement = FullJoin(crossingInStart, checkedElement);
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInStart.Ranges[0]},{crossingInStart.Ranges[1]};" +
+                        $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"Слияние в общий отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
                 }
 
             }
-            HostRangesBase crossingInEnd = resultList.Where(h => h.HostName == checkedElement.HostName 
+            HostRangesBase crossingInEnd = _resultList.Where(h => h.HostName == checkedElement.HostName 
                 && h.Ranges[0] > checkedElement.Ranges[0]
                 && checkedElement.Ranges[1] >= h.Ranges[0] && h.Ranges[1] >= checkedElement.Ranges[1])
                 .FirstOrDefault();
 
             if (crossingInEnd != null)
             {
-                resultList.Remove(crossingInEnd);
+                _resultList.Remove(crossingInEnd);
                 if (crossingInEnd.ExInClusionFlag != checkedElement.ExInClusionFlag)
                 {
                     HostRangesBase[] outherJoin = OutherJoin(checkedElement, crossingInEnd);
                     if (outherJoin[1].Ranges.Length != 0)
-                        resultList.Add(outherJoin[1]);
+                        _resultList.Add(outherJoin[1]);
 
                     checkedElement = outherJoin[0];
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
+                        $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"Разделены на два отрезка {outherJoin[0].Ranges[0]},{outherJoin[0].Ranges[1]}" +
+                        $" и {outherJoin[1].Ranges[0]},{outherJoin[1].Ranges[1]}");
                 }
                 else
                 {
                     checkedElement = FullJoin(checkedElement, crossingInEnd);
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Пересечение отрезка {crossingInEnd.Ranges[0]},{crossingInEnd.Ranges[1]};" +
+                        $"с {checkedElement.Ranges[0]},{checkedElement.Ranges[1]} " +
+                        $"Слияние в общий отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]}");
+
                 }
             }
 
-            List<HostRangesBase> enteringElements = resultList
+            List<HostRangesBase> enteringElements = _resultList
                 .Where(h => h.HostName == checkedElement.HostName && h.Ranges[0] >= checkedElement.Ranges[0]
                     && h.Ranges[1] <= checkedElement.Ranges[1]).OrderBy(r => r.Ranges[0]).ToList();
 
@@ -369,21 +416,33 @@ namespace HostAggregation.RangeAllocationService
             {
                 foreach (HostRangesBase element in enteringElements)
                 {
-                    resultList.Remove(element);
+                    _resultList.Remove(element);
                 }
                 if (enteringElements.FirstOrDefault(e => e.ExInClusionFlag != checkedElement.ExInClusionFlag)!= null)
                 {
-                    resultList.AddRange(PartitionSegmentIfInclusion(checkedElement, 
-                        enteringElements.Where(e => e.ExInClusionFlag != checkedElement.ExInClusionFlag).ToList()));
+                    List<HostRangesBase> listForSegmentation = enteringElements
+                        .Where(e => e.ExInClusionFlag != checkedElement.ExInClusionFlag).ToList();
+
+                    string segmentsString = String.Join(",", listForSegmentation.SelectMany(h => h.Ranges).ToList());
+
+                    List<HostRangesBase> partition = PartitionSegmentIfInclusion(checkedElement, listForSegmentation);
+                    _resultList.AddRange(partition);
+
+                    string ranges = String.Join(",", partition.SelectMany(h => h.Ranges).ToList());
+
+                    // Добавить в журнал, что элемент из файла name строки i был разделен элементами строки i файла name на интервалы.
+                    LogService.Log.AddInfo($"{checkedElement.HostName}; Отрезок {checkedElement.Ranges[0]},{checkedElement.Ranges[1]};" +
+                        $"Разделен отрезками {segmentsString} " +
+                        $"на отрезки {ranges}");
                 }
                 else
                 {
-                    resultList.Add(checkedElement);
+                    _resultList.Add(checkedElement);
                 }
             }
             else
             {
-                resultList.Add(checkedElement);
+                _resultList.Add(checkedElement);
             }
         }
 

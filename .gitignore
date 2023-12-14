@@ -111,3 +111,23 @@
 /RangeAllocationService/obj/Debug/net6.0/HostAggregation.RangeAllocationService.AssemblyInfo.cs
 /HostAggregation/bin/Debug/net6.0/Program.cs
 /HostAggregation/bin/Debug/net6.0/Reports/hosts - report.txt
+/HostAggregation/bin/Debug/net6.0/LogJournals
+/HostAggregation/bin/Debug/net6.0/Reports
+/HostAggregation.LogService/obj/Debug/net6.0/.NETCoreApp,Version=v6.0.AssemblyAttributes.cs
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.AssemblyInfo.cs
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.AssemblyInfoInputs.cache
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.assets.cache
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.AssemblyReference.cache
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.CopyComplete
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.CoreCompileInputs.cache
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.FileListAbsolute.txt
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.GeneratedMSBuildEditorConfig.editorconfig
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.GlobalUsings.g.cs
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.sourcelink.json
+/HostAggregation.LogService/obj/HostAggregation.LogService.csproj.nuget.dgspec.json
+/HostAggregation.LogService/obj/HostAggregation.LogService.csproj.nuget.g.props
+/HostAggregation.LogService/obj/HostAggregation.LogService.csproj.nuget.g.targets
+/HostAggregation.LogService/obj/project.assets.json
+/HostAggregation.LogService/obj/project.nuget.cache
+*.json
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.BuildWithSkipAnalyzers
