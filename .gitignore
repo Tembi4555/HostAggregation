@@ -130,3 +130,4 @@
 /HostAggregation.LogService/obj/project.assets.json
 /HostAggregation.LogService/obj/project.nuget.cache
 *.json
+/HostAggregation.LogService/obj/Debug/net6.0/HostAggregation.LogService.csproj.BuildWithSkipAnalyzers
